@@ -3,26 +3,23 @@ pragma solidity ^0.4.24;
 contract Channels {
 
     /*--- Structures ---*/
-    enum ChannelStatus {NONE, OPENED, CLOSED, CANCELED}
     struct Channel {
-        ChannelStatus status;
+        bool exists;
         address sender;
         address recipient;
         uint256 value;
-        uint256 openedAt;
         uint256 fee;
-        uint256 timeout;
+        uint256 canCanceledAt;
     }
 
     /*--- Events ---*/
     event ChannelOpened(bytes32 id, address sender, address recipient, uint256 value);
     event ChannelClosed(bytes32 id, uint256 toSender, uint256 toRecipient);
-    //event СhannelCanceled(bytes32 id);
+    event ChannelCanceled(bytes32 id);
 
     /*--- Store ---*/
     address public owner;
     uint256 public fee;
-    uint256 public timeout;
     uint256 public totalFee;
 
     mapping(bytes32 => Channel) channels;
@@ -44,36 +41,36 @@ contract Channels {
         fee = _fee;
     }
 
-    function setTimeout(uint256 _timeout)
-    external onlyOwner {
-        timeout = _timeout;
-    }
-
     function withdrawTotalFee(address to)
     external onlyOwner {
         to.transfer(totalFee);
     }
 
-    function open(bytes32 id, address recipient)
+    function open(bytes32 id, address recipient, uint256 timeout)
     external payable {
-        require(channels[id].status == ChannelStatus.NONE, "Channel with the same id already exists.");
+        require(!channels[id].exists, "Channel with the same id already exists.");
         Channel memory channel = Channel({
-            status : ChannelStatus.OPENED,
+            exists : true,
             sender : msg.sender,
             recipient : recipient,
             value : msg.value,
             fee : fee,
-            timeout : timeout,
-            openedAt : block.timestamp
-            });
+            canCanceledAt : now + timeout
+        });
         channels[id] = channel;
         emit ChannelOpened(id, msg.sender, recipient, msg.value);
     }
 
-    function close(bytes32 h, uint8 v, bytes32 r, bytes32 s, bytes32 id, uint value)
+    function closeByAll(bytes32[2] h, uint8[2] v, bytes32[2] r, bytes32[2] s, bytes32 id, uint value)
     external {
+        close(h[0], v[0], s[0], r[0], id, value);
+        close(h[1], v[1], s[1], r[1], id, value);
+    }
+
+    function close(bytes32 h, uint8 v, bytes32 r, bytes32 s, bytes32 id, uint value)
+    public {
         Channel storage channel = channels[id];
-        require(channel.status == ChannelStatus.OPENED);
+        require(channel.exists);
 
         uint256 channelValue = channel.value;
         require(value <= channelValue);
@@ -94,7 +91,7 @@ contract Channels {
             totalFee += channelValue - toRecipient - toSender;
             channel.recipient.transfer(toRecipient);
             channel.sender.transfer(toSender);
-            channel.status = ChannelStatus.CLOSED;
+            delete channels[id];
             emit ChannelClosed(id, toSender, toRecipient);
         }
     }
@@ -102,5 +99,16 @@ contract Channels {
     function getFeeAmount(uint256 amount, uint256 feePercents)
     private pure returns (uint256) {
         return (amount * feePercents) / 100;
+    }
+
+    function cancel(bytes32 id) 
+    external {
+        Channel storage channel = channels[id];
+        require(channel.exists);
+        require(msg.sender == channel.sender);
+        require(channel.canCanceledAt <= now);
+        channel.sender.transfer(channel.value);
+        delete channels[id];
+        emit ChannelCanceled(id);
     }
 }
