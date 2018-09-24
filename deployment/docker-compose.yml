@@ -1,0 +1,19 @@
+version: "3"
+
+volumes:
+  acuredo-mongo-data:
+
+services:
+  testrpc:
+    image: trufflesuite/ganache-cli:v6.1.8
+    ports:
+      - ${TESTRPC_PORT:-8545}:8545
+    command: -m "inmate luxury business before add script battle must arch speak pact ritual"
+
+  mongodb:
+    image: mongo:4.1
+    ports:
+      - ${MONGODB_PORT:-27017}:27017
+    volumes:
+      - acuredo-mongo-data:/data/db
+

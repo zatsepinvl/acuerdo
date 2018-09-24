@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-
+    "ganache-cli": "^6.1.8"
   },
-  "scripts": {
-  
-  }
+  "scripts": {}
 }

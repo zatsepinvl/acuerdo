@@ -13,9 +13,9 @@ contract Channels {
     }
 
     /*--- Events ---*/
-    event ChannelOpened(bytes32 id, address sender, address recipient, uint256 value);
-    event ChannelClosed(bytes32 id, uint256 toSender, uint256 toRecipient);
-    event ChannelCanceled(bytes32 id);
+    event ChannelOpened(bytes32 channelId, address sender, address recipient, uint256 value, uint256 fee, uint256 canCanceledAt);
+    event ChannelClosed(bytes32 channelId, uint256 toSender, uint256 toRecipient);
+    event ChannelCanceled(bytes32 channelId);
 
     /*--- Store ---*/
     address public owner;
@@ -33,6 +33,7 @@ contract Channels {
 
     constructor() public {
         owner = msg.sender;
+        fee = 2;
     }
 
     function setFee(uint256 _fee)
@@ -46,9 +47,9 @@ contract Channels {
         to.transfer(totalFee);
     }
 
-    function open(bytes32 id, address recipient, uint256 timeout)
+    function open(bytes32 channelId, address recipient, uint256 timeout)
     external payable {
-        require(!channels[id].exists, "Channel with the same id already exists.");
+        require(!channels[channelId].exists, "Channel with the same channelId already exists.");
         Channel memory channel = Channel({
             exists : true,
             sender : msg.sender,
@@ -57,28 +58,31 @@ contract Channels {
             fee : fee,
             canCanceledAt : now + timeout
         });
-        channels[id] = channel;
-        emit ChannelOpened(id, msg.sender, recipient, msg.value);
+        channels[channelId] = channel;
+        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.fee, channel.canCanceledAt);
     }
 
-    function closeByAll(bytes32[2] h, uint8[2] v, bytes32[2] r, bytes32[2] s, bytes32 id, uint value)
+    function closeByAll(bytes32[2] h, uint8[2] v, bytes32[2] r, bytes32[2] s, bytes32 channelId, uint value)
     external {
-        close(h[0], v[0], s[0], r[0], id, value);
-        close(h[1], v[1], s[1], r[1], id, value);
+        close(h[0], v[0], s[0], r[0], channelId, value);
+        close(h[1], v[1], s[1], r[1], channelId, value);
     }
 
-    function close(bytes32 h, uint8 v, bytes32 r, bytes32 s, bytes32 id, uint value)
+    bytes prefix = "\x19Ethereum Signed Message:\n32";
+
+    function close(bytes32 h, uint8 v, bytes32 r, bytes32 s, bytes32 channelId, uint256 value)
     public {
-        Channel storage channel = channels[id];
+        Channel storage channel = channels[channelId];
         require(channel.exists);
 
         uint256 channelValue = channel.value;
         require(value <= channelValue);
 
-        address signer = ecrecover(h, v, r, s);
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, h));
+        address signer = ecrecover(prefixedHash, v, r, s);
         require(signer == channel.sender || signer == channel.recipient);
 
-        bytes32 proof = keccak256(abi.encodePacked(id, value));
+        bytes32 proof = keccak256(abi.encodePacked(channelId, value));
         require(proof == h, "Signature is valid but doesn't match the data provided");
 
         if (signatures[proof] == 0) {
@@ -91,24 +95,25 @@ contract Channels {
             totalFee += channelValue - toRecipient - toSender;
             channel.recipient.transfer(toRecipient);
             channel.sender.transfer(toSender);
-            delete channels[id];
-            emit ChannelClosed(id, toSender, toRecipient);
+            delete channels[channelId];
+            emit ChannelClosed(channelId, toSender, toRecipient);
         }
+    }
+
+    function cancel(bytes32 channelId) 
+    external {
+        Channel storage channel = channels[channelId];
+        require(channel.exists);
+        require(msg.sender == channel.sender);
+        require(channel.canCanceledAt <= now);
+        channel.sender.transfer(channel.value);
+        delete channels[channelId];
+        emit ChannelCanceled(channelId);
     }
 
     function getFeeAmount(uint256 amount, uint256 feePercents)
     private pure returns (uint256) {
         return (amount * feePercents) / 100;
     }
-
-    function cancel(bytes32 id) 
-    external {
-        Channel storage channel = channels[id];
-        require(channel.exists);
-        require(msg.sender == channel.sender);
-        require(channel.canCanceledAt <= now);
-        channel.sender.transfer(channel.value);
-        delete channels[id];
-        emit ChannelCanceled(id);
-    }
+   
 }

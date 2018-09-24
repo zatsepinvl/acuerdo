@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URL:mongodb://192.168.99.100:27017/acuerdo}
