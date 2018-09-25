@@ -1,21 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import {configure} from 'mobx';
+import {Provider} from 'mobx-react';
+import {MuiThemeProvider} from '@material-ui/core/styles';
+
+import './styles/index.css';
 import App from './App';
-import registerServiceWorker from './registerServiceWorker';
-import {observable, action} from 'mobx';
-import axios from 'axios';
+import {stores} from './stores/index';
+import {theme} from './theme';
 
-class Store {
-    @observable state;
-    load = async () => this.setState(await axios.get('https://httpbin.org/get'));
-    @action setState = state => {
-        console.log('setting state');
-        console.log(state);
-        this.state = state;
-    }
-}
+// For easier debugging
+window._____APP_STATE_____ = stores;
+// Don't allow state modifications outside actions
+configure({enforceActions: 'observed'});
 
-const store = new Store();
-ReactDOM.render(<App store={store}/>, document.getElementById('root'));
-registerServiceWorker();
+ReactDOM.render(
+    <MuiThemeProvider theme={theme}>
+        <Provider {...stores}>
+            <App/>
+        </Provider>
+    </MuiThemeProvider>,
+    document.getElementById('root')
+);
