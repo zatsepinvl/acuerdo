@@ -14,13 +14,13 @@ body {
     flex-grow: 1;
 }
 
-.need-login-card-container {
+.metamask-login-card-container {
     height: 100vh;
     display: flex;
     background: #37474F;
 }
 
-.need-login-card-container .need-login-card {
+.metamask-login-card-container .metamask-login-card {
     width: 400px;
     display: flex;
     flex-direction: row;
@@ -29,6 +29,25 @@ body {
     padding: 20px;
 }
 
-.need-login-card .text {
+.metamask-login-card .text {
+    line-height: 60px;
+}
+
+.metamask-need-card-container {
+    height: 100vh;
+    display: flex;
+    background: #37474F;
+}
+
+.metamask-need-card-container .metamask-need-card {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: auto;
+    padding: 20px;
+}
+
+.metamask-need-card .text {
     line-height: 60px;
 }

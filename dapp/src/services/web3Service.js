@@ -1,15 +1,9 @@
 import Web3 from 'web3';
-import {observable, computed, action} from 'mobx';
-import uiStore from './uiStore';
 
-class web3Store {
-    @observable web3;
-    @observable account;
-    @observable netId;
-    @observable notConnected;
+class web3Service {
 
     constructor() {
-        this.init().then(() => uiStore.setWeb3Loaded(true));
+        this.whenLoad = this.init();
     }
 
     init = async () => {
@@ -26,7 +20,6 @@ class web3Store {
         }
     };
 
-    @action
     setState = (account, netId, web3) => {
         this.account = account;
         this.netId = netId;
@@ -43,4 +36,4 @@ class web3Store {
     };
 }
 
-export default new web3Store();
+export default new web3Service();

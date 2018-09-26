@@ -1,7 +1,5 @@
-import uiStore from './uiStore';
-import web3Store from './web3Store';
+import appStore from './appStore';
 
 export const stores = {
-    uiStore,
-    web3Store
+    appStore,
 };
