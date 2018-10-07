@@ -1,19 +1,45 @@
 import {observable, computed, action} from 'mobx';
 import web3Service from '../services/web3Service';
+import channelService from "../services/channelService";
+import channelStore from "./channelStore";
 
-class uiStore {
-    @observable web3Loaded;
+class appStore {
+    @observable appLoaded;
+    @observable appSynced;
 
     constructor() {
-        web3Service.whenLoad.then(() => this.setWeb3Loaded(true));
+        this._init();
     }
 
-    @action setWeb3Loaded = value => this.web3Loaded = value;
+    async _init() {
+        await this._checkAndSet([
+            web3Service.whenLoad,
+            channelService.whenLoad,
+        ], this.setAppLoaded);
 
-    @computed
-    get isAppLoaded() {
-        return !!this.web3Loaded;
+        await this._checkAndSet([
+            channelService.whenSynced,
+            channelStore.whenSynced
+        ], this.setAppSynced);
     }
+
+    async _checkAndSet(promises, setter) {
+        try {
+            await Promise.all(promises);
+        }
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            setter(true);
+        }
+    }
+
+    @action setAppLoaded = value => this.appLoaded = value;
+
+    @action setAppSynced = value => this.appSynced = value;
+
+
 }
 
-export default new uiStore();
+export default new appStore();

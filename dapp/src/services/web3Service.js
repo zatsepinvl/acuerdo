@@ -2,37 +2,38 @@ import Web3 from 'web3';
 
 class web3Service {
 
+    web3;
+    eventWeb3;
+    account;
+    netId;
+
     constructor() {
-        this.whenLoad = this._init();
+        this.whenLoad = this._load();
     }
 
-    _init = async () => {
-        let web3 = window.web3;
-        if (typeof web3 !== 'undefined') {
-            web3 = new Web3(web3.currentProvider);
-            const [accounts, netId] = await Promise.all([
-                web3.eth.getAccounts(),
-                web3.eth.net.getId()
-            ]);
-            this._setState(accounts[0], netId, web3);
-        } else {
+    _load = async () => {
+        this.eventWeb3 = new Web3('ws://localhost:8545');
+        if (!Web3.givenProvider) {
             this.notConnected = true;
+            return;
         }
-    };
-
-    _setState = (account, netId, web3) => {
-        this.account = account;
+        this.web3 = new Web3(Web3.givenProvider);
+        const [accounts, netId] = await Promise.all([
+            this.web3.eth.getAccounts(),
+            this.web3.eth.net.getId()
+        ]);
+        this.account = accounts.length && accounts[0].toLowerCase();
         this.netId = netId;
-        this.web3 = web3;
-        this._subscribeOnUpdate(web3);
+        this._subscribeOnUpdate();
     };
 
-    _subscribeOnUpdate = web3 => {
-        web3.currentProvider.publicConfigStore.on('update', response => {
-            if (this.account !== response.selectedAddress) {
-                window.location.reload();
-            }
-        });
+    _subscribeOnUpdate() {
+        this.web3.currentProvider.publicConfigStore
+            .on('update', response => {
+                if (this.account !== response.selectedAddress) {
+                    window.location.reload();
+                }
+            });
     };
 }
 

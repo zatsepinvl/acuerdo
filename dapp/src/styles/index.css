@@ -4,6 +4,10 @@ body {
     font-family: sans-serif;
 }
 
+.no-text-decoration {
+    text-decoration: none;
+}
+
 .app {
 }
 
@@ -12,6 +16,14 @@ body {
 
 .app-bar .title {
     flex-grow: 1;
+}
+
+.drawer {
+
+}
+
+.drawer .link {
+    text-decoration: none;
 }
 
 .metamask-login-card-container {
