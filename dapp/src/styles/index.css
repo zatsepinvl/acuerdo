@@ -4,25 +4,16 @@ body {
     font-family: sans-serif;
 }
 
-.no-text-decoration {
+a {
     text-decoration: none;
+    color: #0277BD;
 }
 
-.app {
+a:hover {
+    text-decoration: underline #0277BD;
 }
 
-.app .app-bar {
-}
-
-.app-bar .title {
-    flex-grow: 1;
-}
-
-.drawer {
-
-}
-
-.drawer .link {
+.no-text-decoration {
     text-decoration: none;
 }
 

@@ -11,6 +11,15 @@ class web3Service {
         this.whenLoad = this._load();
     }
 
+    getBlock(numberOrHash) {
+        return this.web3.eth.getBlock(numberOrHash);
+    }
+
+    async getBlockTimestamp(numberOrHash) {
+        const block = await this.getBlock(numberOrHash);
+        return block.timestamp;
+    }
+
     _load = async () => {
         this.eventWeb3 = new Web3('ws://localhost:8545');
         if (!Web3.givenProvider) {

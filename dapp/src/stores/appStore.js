@@ -1,11 +1,8 @@
-import {observable, computed, action} from 'mobx';
-import web3Service from '../services/web3Service';
-import channelService from "../services/channelService";
-import channelStore from "./channelStore";
+import {action, observable} from 'mobx';
+import {channelService, web3Service} from '../services';
 
 class appStore {
     @observable appLoaded;
-    @observable appSynced;
 
     constructor() {
         this._init();
@@ -16,11 +13,6 @@ class appStore {
             web3Service.whenLoad,
             channelService.whenLoad,
         ], this.setAppLoaded);
-
-        await this._checkAndSet([
-            channelService.whenSynced,
-            channelStore.whenSynced
-        ], this.setAppSynced);
     }
 
     async _checkAndSet(promises, setter) {
@@ -36,10 +28,6 @@ class appStore {
     }
 
     @action setAppLoaded = value => this.appLoaded = value;
-
-    @action setAppSynced = value => this.appSynced = value;
-
-
 }
 
 export default new appStore();

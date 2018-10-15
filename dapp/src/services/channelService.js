@@ -1,82 +1,53 @@
+import BigNumber from "bignumber.js";
+
 import web3Service from "./web3Service";
 import contractService from "./contractService";
-import Channels from "../contracts/Channels.json";
-import storageService from "./storageService";
-
-const keys = {
-    fromBlock: 'fromBlock',
-    channels: 'channels'
-};
+import * as restClient from "./restClient";
 
 class channelService {
-
-    whenLoaded;
-    whenSynced;
-    fee;
-    _channelsContract;
-    channelsEvents;
-    channels;
+    whenLoad;
+    _channels;
 
     constructor() {
-        this.whenLoaded = this._load();
-        this.whenSynced = this._sync();
+        this.whenLoad = this._load();
     }
 
     async _load() {
         await web3Service.whenLoad;
-        this._channelsContract = contractService.loadContractFromJson(Channels);
-        this.channelsEvents = contractService.loadEventContractFromJson(Channels);
-        this.fee = await this._channelsContract.methods.fee().call();
+        const contract = await restClient.channels.contract();
+        this._channels = contractService.loadContract(contract);
     }
 
-    async _sync() {
-        await this.whenLoaded;
-        const fromBlock = storageService.get(keys.fromBlock, 0);
-        const toBlock = await web3Service.web3.eth.getBlockNumber();
-        console.log(toBlock);
-        const options = {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            filter: {
-                sender: web3Service.account,
-                //recipient: web3Service.account
-            }
-        };
-        const channels = storageService.get(keys.channels, []);
-        const newChannels = fromBlock <= toBlock ? await this._getChannels(options) : [];
-        this.channels = channels.concat(newChannels);
-        storageService.save(keys.fromBlock, toBlock + 1);
-        storageService.save(keys.channels, this.channels);
+    getChannels() {
+        const username = web3Service.account;
+        return restClient.channels.getAllByUser(username)
+    }
+
+    getChannelById(channelId) {
+        return restClient.channels.getById(channelId);
     }
 
     openChannel(channel) {
-        const args = [channel.id, channel.recipient, channel.timeout, channel.data];
-        const txArgs = {value: channel.value};
-        const tx = this._channelsContract.methods.open(...args);
-        return contractService.sendTx(tx, txArgs);
+        const {channelId, recipient, timeout, value, fee} = channel;
+        const args = [channelId, recipient, timeout];
+        const txArgs = {value: BigNumber(value).plus(fee)};
+        const tx = this._channels.methods.open(...args);
+        return contractService.sendTx(tx, txArgs)
+            .then(transactionHash => {
+                channel.status = 'PENDING';
+                const transaction = {
+                    hash: transactionHash,
+                    channelId: channelId,
+                    from: channel.sender,
+                    to: this._channels.options.address,
+                    event: 'OPEN_CHANNEL'
+                };
+                return restClient.channels.save({channel, transaction});
+            })
     }
 
-    async _getChannels(options = {fromBlock: 0}) {
-        const openedEvents = await this._getOpenedChannels(options)
-        return openedEvents.map(this._channelFromOpenedEvent)
-    }
-
-    _getOpenedChannels(options = {fromBlock: 0}) {
-        return this.channelsEvents.getPastEvents('ChannelOpened', options)
-    }
-
-    _getClosedChannels(options = {fromBlock: 0}) {
-        return this.channelsEvents.getPastEvents('ChannelClosed', options)
-    }
-
-    _channelFromOpenedEvent(event) {
-        const values = event.returnValues;
-        return Object.keys(values)
-            .filter(isNaN)
-            .reduce((obj, key) => {
-                obj[key] = values[key];
-                return obj;
-            }, {});
+    getFee() {
+        return this._channels.methods.fee().call();
     }
 }
 

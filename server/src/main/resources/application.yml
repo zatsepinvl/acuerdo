@@ -2,3 +2,6 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URL:mongodb://192.168.99.100:27017/acuerdo}
+
+web3:
+  nodeUrl: ${WEB3_NODE_URL:http://localhost:8545}

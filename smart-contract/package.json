@@ -5,5 +5,7 @@
   "dependencies": {
     "ganache-cli": "^6.1.8"
   },
-  "scripts": {}
+  "scripts": {
+    "migrate": "sh migrate.sh"
+  }
 }

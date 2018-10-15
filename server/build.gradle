@@ -30,9 +30,13 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect"
-    compile "org.springframework.boot:spring-boot-starter-webflux"
-    compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
+    compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
+    compile "org.web3j:core:3.6.0"
+    compile "io.springfox:springfox-swagger2:2.9.2"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 compileKotlin {
@@ -41,3 +45,5 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+sourceSets.main.java.srcDirs += "build/generated-sources"

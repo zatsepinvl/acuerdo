@@ -7,14 +7,15 @@ contract Channels {
         address sender;
         address recipient;
         uint256 value;
-        uint256 fee;
         uint256 canCanceledAt;
     }
 
     /*--- Events ---*/
-    event ChannelOpened(bytes32 indexed channelId, address indexed sender, address indexed recipient, uint256 value, uint256 fee, uint256 canCanceledAt, string data);
-    event ChannelClosed(bytes32 indexed  channelId, uint256 releasedToSender, uint256 releasedToRecipient);
+    event ChannelOpened(bytes32 indexed channelId, address indexed sender, address indexed recipient, uint256 value, uint256 canCanceledAt, uint256 feePayed);
+    event ChannelClosed(bytes32 indexed  channelId, uint256 refundToSender, uint256 releasedToRecipient);
+    event ChannelClosedByDispute(bytes32 channelId);
     event ChannelCanceled(bytes32 channelId);
+    
 
     /*--- Store ---*/
     address public owner;
@@ -32,12 +33,11 @@ contract Channels {
 
     constructor() public {
         owner = msg.sender;
-        fee = 2;
+        fee = 1000000000000000;//0.001 ETH
     }
 
     function setFee(uint256 _fee)
     external onlyOwner {
-        require(_fee < 100);
         fee = _fee;
     }
 
@@ -46,18 +46,18 @@ contract Channels {
         to.transfer(totalFee);
     }
 
-    function open(bytes32 channelId, address recipient, uint256 timeout, string data)
+    function open(bytes32 channelId, address recipient, uint256 timeout)
     external payable {
         require(channels[channelId].sender == address(0), "Channel with the same channelId already exists.");
         Channel memory channel = Channel({
             sender : msg.sender,
             recipient : recipient,
-            value : msg.value,
-            fee : fee,
+            value : msg.value - fee,
             canCanceledAt : now + timeout
         });
         channels[channelId] = channel;
-        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.fee, channel.canCanceledAt, data);
+        totalFee += fee;
+        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.canCanceledAt, fee);
     }
 
     function closeByAll(bytes32[2] h, uint8[2] v, bytes32[2] r, bytes32[2] s, bytes32 channelId, uint value)
@@ -87,14 +87,13 @@ contract Channels {
             signatures[proof] = signer;
         } else if (signatures[proof] != signer) {
             //channel completed, both signatures provided
-            uint256 channelFee = channel.fee;
-            uint256 toRecipient = value - getFeeAmount(value, channelFee);
-            uint256 toSender = (channelValue - value) - getFeeAmount(channelValue - value, channelFee);
-            totalFee += channelValue - toRecipient - toSender;
-            channel.recipient.transfer(toRecipient);
-            channel.sender.transfer(toSender);
+            uint256 toSender = channelValue - value;
+            channel.recipient.transfer(value);
+            if(toSender > 0) {
+                channel.sender.transfer(toSender);
+            }
             delete channels[channelId];
-            emit ChannelClosed(channelId, toSender, toRecipient);
+            emit ChannelClosed(channelId, toSender, value);
         }
     }
 
@@ -109,9 +108,14 @@ contract Channels {
         emit ChannelCanceled(channelId);
     }
 
-    function getFeeAmount(uint256 amount, uint256 feePercents)
-    private pure returns (uint256) {
-        return (amount * feePercents) / 100;
+    function resolveDispute(bytes32 channelId, uint256 amountToSender, uint256 amountToRecipient)
+    onlyOwner external {
+        Channel storage channel = channels[channelId];
+        require(channel.sender != address(0));
+        channel.sender.transfer(amountToSender);
+        channel.recipient.transfer(amountToRecipient);
+        delete channels[channelId];
+        emit ChannelClosedByDispute(channelId);
     }
    
 }

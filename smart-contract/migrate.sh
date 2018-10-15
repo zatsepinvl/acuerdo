@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -e
 network=${1:-testrpc}
 reset=${2}

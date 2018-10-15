@@ -8,13 +8,12 @@ contract('Channels', (accounts) => {
         sender: accounts[0],
         recepient: accounts[1],
         value: 10 ** 18,
-        timeout: 100,
-        data: '123456789'//JSON.stringify({name: 'Some name'})
+        timeout: 100
     };
     describe('Main Payment Channel Flow', () => {
         it('Open channel', async () => {
-            const {channelId, sender, recepient, timeout, value, data} = channel;
-            const openTxResult = await tx(channels, 'open', [channelId, recepient, timeout, data], {
+            const {channelId, sender, recepient, timeout, value} = channel;
+            const openTxResult = await tx(channels, 'open', [channelId, recepient, timeout], {
                 from: sender,
                 value: value
             }, ['ChannelOpened']);

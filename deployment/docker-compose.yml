@@ -8,7 +8,7 @@ services:
     image: trufflesuite/ganache-cli:v6.1.8
     ports:
       - ${TESTRPC_PORT:-8545}:8545
-    command: -m "inmate luxury business before add script battle must arch speak pact ritual" -n 4447
+    command: -m "inmate luxury business before add script battle must arch speak pact ritual" -i 4447
 
   mongodb:
     image: mongo:4.1

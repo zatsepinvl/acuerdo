@@ -6,7 +6,8 @@ import {MuiThemeProvider} from '@material-ui/core/styles';
 
 import './styles/index.css';
 import App from './App';
-import {stores} from './stores/index';
+import './services';
+import * as stores from './stores';
 import {theme} from './theme';
 
 // For easier debugging

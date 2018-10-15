@@ -1,5 +1,6 @@
 import React from 'react';
-import {observer, inject} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
+
 import {withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,29 +12,113 @@ import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
+import HashView from "../common/HashView";
+import AmountView from "../common/AmountView";
+import TimeView from "../common/TimeView";
+
+import web3Service from "../services/web3Service";
+import Loader from "../common/Loader";
+
 const styles = (theme) => ({
+    root: {
+        minWidth: 900
+    },
     tableRow: {
         cursor: 'pointer',
     },
-    createNewButton: {},
+    toolbar: {
+        paddingLeft: 0,
+        paddingRight: 0,
+    },
     title: {
         flexGrow: 1
-    }
+    },
+    createNewButton: {},
 });
 
-@inject('channelStore')
+@inject('channelsStore')
 @observer
 class ChannelsList extends React.Component {
 
-    handleOnCreateNewClicked = () => {
+    componentDidMount() {
+        this.props.channelsStore.loadChannels();
+    }
+
+    handleCreateNewClicked = () => {
         this.props.history.push('/channel/new');
     };
 
-    render() {
-        const {classes, channelStore} = this.props;
-        const {channels} = channelStore;
+    handleChannelClicked = (event, id) => {
+        this.props.history.push(`/channel/${id}`);
+    };
+
+    renderYou(address) {
+        return web3Service.account === address && ' (you)'
+    }
+
+    renderLoader() {
+        return <Loader caption="Loading channels..."/>
+    }
+
+    renderChannelsTable() {
+        const {classes, channelsStore} = this.props;
+        const {channels} = channelsStore;
         return (
-            <div>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Channel Id</TableCell>
+                        <TableCell>Sender</TableCell>
+                        <TableCell>Recipient</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Created At</TableCell>
+                        <TableCell>Status</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {channels.map(channel => {
+                        const {sender, recipient, value, createdAt, status, channelId: id} = channel;
+                        return (
+                            <TableRow key={id}
+                                      className={classes.tableRow}
+                                      hover
+                                      onClick={event => this.handleChannelClicked(event, id)}>
+                                <TableCell component="th" scope="row">
+                                    <HashView hash={id}/>
+                                </TableCell>
+                                <TableCell>
+                                    <HashView hash={sender}/>
+                                    {this.renderYou(sender)}
+                                </TableCell>
+                                <TableCell>
+                                    <HashView hash={recipient}/>
+                                    {this.renderYou(recipient)}
+                                </TableCell>
+                                <TableCell>
+                                    <AmountView value={value} currency="ETH"/>
+                                </TableCell>
+                                <TableCell>
+                                    <TimeView time={createdAt}/>
+                                </TableCell>
+                                <TableCell>
+                                    {status}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        )
+    }
+
+    render() {
+        const {classes, channelsStore} = this.props;
+        const {loaded, channels} = channelsStore;
+        if (!loaded) {
+            return this.renderLoader();
+        }
+        return (
+            <Paper className={classes.root}>
                 <Toolbar>
                     <Typography variant="title" color="inherit"
                                 className={classes.title}>
@@ -41,43 +126,17 @@ class ChannelsList extends React.Component {
                     </Typography>
                     <Button variant="contained" color="secondary"
                             className={classes.createNewButton}
-                            onClick={this.handleOnCreateNewClicked}>
+                            onClick={this.handleCreateNewClicked}>
                         Create New
                     </Button>
                 </Toolbar>
-                <Paper>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Channel Id</TableCell>
-                                <TableCell>Recipient</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Created At</TableCell>
-                                <TableCell>Status</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {channels.map(channel => {
-                                return (
-                                    <TableRow key={channel.channelId}
-                                              className={classes.tableRow}
-                                              hover
-                                              onClick={event => console.log(event + channel.channelId)}>
-                                        <TableCell component="th"
-                                                   scope="row">
-                                            {channel.channelId.substr(0, 6)}...{channel.channelId.substr(62, 4)}
-                                        </TableCell>
-                                        <TableCell>0x0dae...3d69</TableCell>
-                                        <TableCell>1.0 ETH</TableCell>
-                                        <TableCell>10 10 2018</TableCell>
-                                        <TableCell>Opened</TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </Paper>
-            </div>
+                {!channels.length && (
+                    <Typography variant="caption" align="center" paragraph gutterBottom>
+                        No channels yet
+                    </Typography>
+                )}
+                {!!channels.length && this.renderChannelsTable()}
+            </Paper>
         );
     }
 }

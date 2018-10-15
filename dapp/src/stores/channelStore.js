@@ -1,22 +1,23 @@
-import {observable, action} from 'mobx';
+import {action, flow, observable} from 'mobx';
 import channelService from "../services/channelService";
 
 class channelsStore {
-    whenSynced;
-    @observable channels = [];
+    @observable channel;
+    @observable loaded;
 
     constructor() {
-        this.whenSynced = this._sync();
-    }
-
-    async _sync() {
-        await channelService.whenSynced;
-        const channels = channelService.channels;
-        this._addChannels(channels);
     }
 
     @action
-    _addChannels = (channels) => this.channels = this.channels.concat(channels);
+    reset() {
+        this.channel = undefined;
+        this.loaded = false;
+    }
+
+    loadChannel = flow(function* (channelId) {
+        this.channel = yield channelService.getChannelById(channelId);
+        this.loaded = true;
+    })
 }
 
 export default new channelsStore();
