@@ -1,12 +1,14 @@
-package com.acuerdo.web3.core.log
+package com.acuerdo.channels.web3
 
 import com.acuerdo.channels.core.event.ChannelEvent
 import com.acuerdo.channels.core.event.ChannelEventDispatcher
+import com.acuerdo.channels.core.event.EventType
 import com.acuerdo.channels.core.event.EventType.CHANNEL_OPENED
 import com.acuerdo.channels.core.model.*
 import com.acuerdo.web3.contract.Channels
 import com.acuerdo.web3.contract.Channels.ChannelClosedEventResponse
 import com.acuerdo.web3.contract.Channels.ChannelOpenedEventResponse
+import com.acuerdo.web3.core.log.TransactionHandler
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.TransactionReceipt
@@ -60,12 +62,25 @@ class ChannelsTransactionHandler(
     }
 
     private fun handleChanelClosedEvent(event: ChannelClosedEventResponse) {
-        /* val channelId = Numeric.toHexString(event.channelId)
-         val channel = channelRepository.getById(channelId)
-         channel.status = ChannelStatus.CLOSED
-         channel.refundToSender = event.refundToSender
-         channel.releaseToRecipient = event.releasedToRecipient
-         channelRepository.save(channel)
-         channelEventDispatcher.dispatch(ChannelEvent(channel, CHANNEL_CLOSED))*/
+        val channelId = Numeric.toHexString(event.channelId)
+        val channel = channelRepository.getById(channelId)
+        val block = web3j.ethGetBlockByHash(event.log.blockHash, false).send().block
+        val timestamp = Instant.ofEpochSecond(block.timestamp.longValueExact())
+        val ethTx = web3j.ethGetTransactionByHash(event.log.transactionHash).send().result
+        channel.status = ChannelStatus.CLOSED
+        channel.refundToSender = event.refundToSender
+        channel.releaseToRecipient = event.releasedToRecipient
+        val transaction = Transaction(
+                hash = ethTx.hash,
+                channelId = channel.channelId,
+                from = ethTx.from,
+                to = ethTx.to,
+                status = TransactionStatus.CONFIRMED,
+                confirmedAt = timestamp,
+                event = TransactionEvent.CLOSE_CHANNEL
+        )
+        channelRepository.save(channel)
+        transactionRepository.save(transaction)
+        channelEventDispatcher.dispatch(ChannelEvent(channel, transaction, EventType.CHANNEL_CLOSED))
     }
 }

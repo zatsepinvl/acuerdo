@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service
 class WsChannelEventHandler(
         val messagingTemplate: SimpMessagingTemplate
 ) : ChannelEventHandler {
-    override fun onChannelChanged(channelEvent: ChannelEvent) {
-        messagingTemplate.convertAndSend(
-                "/channels/${channelEvent.channel.channelId}",
-                channelEvent
-        )
+    override fun onChannelChanged(event: ChannelEvent) {
+        sendUserChannelEvent(event.channel.sender, event)
+        sendUserChannelEvent(event.channel.recipient, event)
+    }
+
+    private fun sendUserChannelEvent(to: String, event: ChannelEvent) {
+        messagingTemplate.convertAndSend("/topic/users/$to/channels", event)
     }
 }

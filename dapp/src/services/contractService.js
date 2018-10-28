@@ -8,9 +8,11 @@ class contractService {
         return new web3.eth.Contract(abi, address, {from: account});
     }
 
-    sendTx(tx, args) {
+    sendTx(tx, args = {}) {
         return new Promise((resolve, reject) => {
-            tx.send(args).on('transactionHash', resolve).on('error', reject)
+            tx.send(args)
+                .on('transactionHash', resolve)
+                .on('error', reject)
         });
     }
 }

@@ -15,28 +15,20 @@ contract('Channels', (accounts) => {
             const {channelId, sender, recepient, timeout, value} = channel;
             const openTxResult = await tx(channels, 'open', [channelId, recepient, timeout], {
                 from: sender,
-                value: value
+                value: value + 1000000000000000
             }, ['ChannelOpened']);
             console.log(openTxResult.events.ChannelOpened);
             assert.equal(openTxResult.events.ChannelOpened.channelId, channelId, 'Channed Id from event doesnt match');
 
 
             const closeValue = value / 2;
-            const proof = web3.utils.soliditySha3(channelId, closeValue);
+            const proof = await channels.methods.getPaymentId(channelId, closeValue).call();
 
             const signature = await web3.eth.sign(proof, sender);
             const senderSign = splitSignature(signature);
-            const senderCloseTxResult = await tx(
-                channels, 'close',
-                [proof, senderSign.v, senderSign.r, senderSign.s, channelId, closeValue],
-                {from: sender}
-            );
-
-            const signature1 = await web3.eth.sign(proof, recepient);
-            const recipientSign = splitSignature(signature1);
             const recipientCloseTxResult = await tx(
                 channels, 'close',
-                [proof, recipientSign.v, recipientSign.r, recipientSign.s, channelId, closeValue],
+                [proof, senderSign.v, senderSign.r, senderSign.s, channelId, closeValue],
                 {from: recepient},
                 ['ChannelClosed']
             );

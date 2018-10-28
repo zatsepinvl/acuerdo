@@ -18,6 +18,7 @@ import TimeView from "../common/TimeView";
 
 import web3Service from "../services/web3Service";
 import Loader from "../common/Loader";
+import ChannelStatus from "../common/ChannelStatus";
 
 const styles = (theme) => ({
     root: {
@@ -101,7 +102,7 @@ class ChannelsList extends React.Component {
                                     <TimeView time={createdAt}/>
                                 </TableCell>
                                 <TableCell>
-                                    {status}
+                                    <ChannelStatus status={status}/>
                                 </TableCell>
                             </TableRow>
                         );

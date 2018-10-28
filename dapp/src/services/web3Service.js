@@ -3,9 +3,9 @@ import Web3 from 'web3';
 class web3Service {
 
     web3;
-    eventWeb3;
     account;
     netId;
+    whenLoad;
 
     constructor() {
         this.whenLoad = this._load();
@@ -15,18 +15,17 @@ class web3Service {
         return this.web3.eth.getBlock(numberOrHash);
     }
 
-    async getBlockTimestamp(numberOrHash) {
-        const block = await this.getBlock(numberOrHash);
-        return block.timestamp;
-    }
+    sign(text) {
+        return this.web3.eth.personal.sign(text, this.account);
+    };
+
+    sha3(...args) {
+        return this.web3.utils.soliditySha3(...args);
+    };
 
     _load = async () => {
-        this.eventWeb3 = new Web3('ws://localhost:8545');
-        if (!Web3.givenProvider) {
-            this.notConnected = true;
-            return;
-        }
         this.web3 = new Web3(Web3.givenProvider);
+        window.w = this.web3;
         const [accounts, netId] = await Promise.all([
             this.web3.eth.getAccounts(),
             this.web3.eth.net.getId()
@@ -44,6 +43,15 @@ class web3Service {
                 }
             });
     };
+
+    splitSignature(signature) {
+        signature = signature.substr(2);
+        return {
+            r: '0x' + signature.slice(0, 64),
+            s: '0x' + signature.slice(64, 128),
+            v: this.web3.utils.toDecimal('0x' + signature.slice(128, 130))
+        }
+    }
 }
 
 export default new web3Service();

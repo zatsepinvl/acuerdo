@@ -10,8 +10,17 @@ class ChannelSaveRequest(
         val transaction: Transaction
 )
 
+class ChannelCloseRequest(
+        val channelId: String,
+        val transaction: Transaction
+)
+
 class ChannelResponse(
         @JsonUnwrapped val channel: Channel,
         val payments: List<Payment>,
         val transactions: List<Transaction>
+)
+
+class PaymentSignature(
+        val signature: String
 )

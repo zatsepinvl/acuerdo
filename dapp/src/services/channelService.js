@@ -2,10 +2,11 @@ import BigNumber from "bignumber.js";
 
 import web3Service from "./web3Service";
 import contractService from "./contractService";
-import * as restClient from "./restClient";
+import httpClient from "../client/httpClient";
 
 class channelService {
     whenLoad;
+    address;
     _channels;
 
     constructor() {
@@ -14,17 +15,22 @@ class channelService {
 
     async _load() {
         await web3Service.whenLoad;
-        const contract = await restClient.channels.contract();
+        const contract = await httpClient.channels.contract();
         this._channels = contractService.loadContract(contract);
+        this.address = this._channels.options.address.toLowerCase();
     }
 
     getChannels() {
         const username = web3Service.account;
-        return restClient.channels.getAllByUser(username)
+        return httpClient.channels.getAllByUser(username)
     }
 
     getChannelById(channelId) {
-        return restClient.channels.getById(channelId);
+        return httpClient.channels.getById(channelId);
+    }
+
+    getContract() {
+        return this._channels;
     }
 
     openChannel(channel) {
@@ -42,8 +48,15 @@ class channelService {
                     to: this._channels.options.address,
                     event: 'OPEN_CHANNEL'
                 };
-                return restClient.channels.save({channel, transaction});
+                return httpClient.channels.save({channel, transaction});
             })
+    }
+
+    closeChannel({channelId, paymentId, value, signature}) {
+        const vrs = web3Service.splitSignature(signature);
+        const args = [paymentId, vrs.v, vrs.r, vrs.s, channelId, '' + value];
+        const tx = this._channels.methods.close(...args);
+        return contractService.sendTx(tx);
     }
 
     getFee() {

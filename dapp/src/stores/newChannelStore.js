@@ -5,9 +5,6 @@ class newChannelStore {
     @observable fee;
     @observable ready;
 
-    constructor() {
-    }
-
     @action
     reset() {
         this.fee = 0;
@@ -17,7 +14,8 @@ class newChannelStore {
     load = flow(function* () {
         this.fee = yield channelService.getFee();
         this.ready = true;
-    })
+    }).bind(this);
+
 
 }
 

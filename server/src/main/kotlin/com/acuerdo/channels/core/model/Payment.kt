@@ -7,11 +7,12 @@ import java.time.Instant
 
 data class Payment(
         @Id
-        val id: String,
+        val paymentId: String,
         val channelId: String,
         val value: BigInteger,
         val createdAt: Instant = Instant.now(),
-        val signature: String
+        val senderSignature: String,
+        var recipientSignature: String? = null
 )
 
 interface PaymentRepository : MongoRepository<Payment, String> {

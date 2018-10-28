@@ -1,4 +1,5 @@
 import React from 'react';
+import {observable, runInAction} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
 
@@ -41,7 +42,11 @@ const styles = theme => ({
 @observer
 class NewChannel extends React.Component {
 
-    state = {};
+    @observable values = {
+        recipient: '',
+        amount: '',
+        timeout: ''
+    };
 
     componentDidMount() {
         this.props.newChannelStore.load();
@@ -52,9 +57,7 @@ class NewChannel extends React.Component {
     }
 
     handleChange = name => event => {
-        this.setState({
-            [name]: event.target.value,
-        });
+        runInAction(() => this.values[name] = event.target.value);
     };
 
     handleCreateClicked = () => {
@@ -102,7 +105,7 @@ class NewChannel extends React.Component {
                             required
                             id="recipient"
                             label="Recipient address"
-                            value={this.state.recipient}
+                            value={this.values.recipient}
                             onChange={this.handleChange('recipient')}
                             placeholder="0x..."
                             className={classes.textField}
@@ -112,7 +115,7 @@ class NewChannel extends React.Component {
                             required
                             id="amount"
                             label="Amount ETH"
-                            value={this.state.amount}
+                            value={this.values.amount}
                             onChange={this.handleChange('amount')}
                             placeholder="1.0"
                             className={classes.textField}
@@ -131,7 +134,7 @@ class NewChannel extends React.Component {
                             required
                             id="timeout"
                             label="Timeout in days"
-                            value={this.state.timeout}
+                            value={this.values.timeout}
                             onChange={this.handleChange('timeout')}
                             placeholder="2"
                             className={classes.textField}

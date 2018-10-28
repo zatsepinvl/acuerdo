@@ -5,13 +5,10 @@ class channelsStore {
     @observable channels = [];
     @observable loaded;
 
-    constructor() {
-    }
-
     loadChannels = flow(function* () {
         this.channels = yield channelService.getChannels();
         this.loaded = true;
-    })
+    }).bind(this);
 }
 
 export default new channelsStore();
