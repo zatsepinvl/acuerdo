@@ -37,8 +37,8 @@ class ChannelDetails extends React.Component {
 
     render() {
         const {classes, channelStore} = this.props;
-        const {channel, isActive} = channelStore;
-        const {channelId: id, sender, recipient, value, canCanceledBefore, createdAt, status} = channel;
+        const {channel, canClose} = channelStore;
+        const {channelId, sender, recipient, value, canCanceledBefore, createdAt, status} = channel;
         return (
             <Paper>
                 <Toolbar>
@@ -46,7 +46,7 @@ class ChannelDetails extends React.Component {
                         Channel
                     </Typography>
                     <React.Fragment>
-                        {isActive && (
+                        {canClose && (
                             <Button variant="contained"
                                     color="secondary"
                                     className={classes.button}
@@ -60,7 +60,7 @@ class ChannelDetails extends React.Component {
                     <ListItem>
                         <ListItemText primary="Channel Id"/>
                         <Typography variant="subheading">
-                            <HashView hash={id}/>
+                            <HashView hash={channelId}/>
                         </Typography>
                     </ListItem>
                     <ListItem>

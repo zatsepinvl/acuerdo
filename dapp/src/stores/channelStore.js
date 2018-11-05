@@ -28,6 +28,21 @@ class channelsStore {
     }
 
     @computed
+    get canClose() {
+        const lastPayment = this.payments[0];
+        if (!lastPayment) {
+            return false;
+        }
+        if (this.isSender && lastPayment.recipientSignature) {
+            return true;
+        }
+        if (this.isRecipient && lastPayment.senderSignature) {
+            return true;
+        }
+        return false;
+    }
+
+    @computed
     get payments() {
         return this.channel.payments.slice()
             .sort((a, b) => moment(b.createdAt).diff(a.createdAt));

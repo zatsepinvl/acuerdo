@@ -1,4 +1,6 @@
 import React from 'react';
+import {action, observable} from 'mobx';
+import {inject, observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import BigNumber from 'bignumber.js';
@@ -11,14 +13,23 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
-const styles = {};
+const styles = {
+    textField: {
+        width: 260
+    }
+};
 
+@inject('channelStore')
+@observer
 class PayoutDialog extends React.Component {
-    state = {
-        value: '0'
-    };
+
+    @observable value;
+    @observable error;
 
     handlePayout = () => {
+        if (this.error) {
+            return;
+        }
         const value = BigNumber(this.state.value).times(10 ** 18);
         this.props.onPayout(value);
     };
@@ -27,26 +38,36 @@ class PayoutDialog extends React.Component {
         this.props.onCancel();
     };
 
+    @action
     changeValue = event => {
-        this.setState({value: event.target.value});
+        const channel = this.props.channelStore.channel;
+        const value = BigNumber(event.target.value).times(10 ** 18);
+        this.error = null;
+        if (value > channel.value) {
+            this.error = 'Value must be less or equal channel amount';
+            return;
+        }
+        this.value = event.target.value;
     };
 
     render() {
-        const {open} = this.props;
+        const {open, classes} = this.props;
         return (
-            <Dialog aria-labelledby="simple-dialog-title" open={open}>
-                <DialogTitle id="simple-dialog-title">
+            <Dialog open={open}>
+                <DialogTitle>
                     Create Payment
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                    </DialogContentText>
+                    <DialogContentText/>
                     <TextField
+                        className={classes.textField}
                         autoFocus
                         margin="dense"
                         id="value"
                         label="Value ETH"
                         onChange={this.changeValue}
+                        error={!!this.error}
+                        helperText={this.error || 'Recipient can get with value'}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -65,7 +86,6 @@ class PayoutDialog extends React.Component {
 PayoutDialog.propTypes = {
     onCreate: PropTypes.func,
     onPayout: PropTypes.func,
-    channel: PropTypes.object
 };
 
 export default withStyles(styles)(PayoutDialog);
