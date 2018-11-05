@@ -66,9 +66,9 @@ class NewChannel extends React.Component {
         const channel = {
             channelId: id,
             sender: web3Service.account,
-            recipient: this.state.recipient,
-            value: this.state.amount * 10 ** 18,
-            timeout: this.state.timeout * 86400, //day to seconds
+            recipient: this.values.recipient,
+            value: this.values.amount * 10 ** 18,
+            timeout: this.values.timeout * 86400, //day to seconds
             fee: fee
         };
         channelService.openChannel(channel)

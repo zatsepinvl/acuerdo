@@ -36,8 +36,8 @@ class ChannelDetails extends React.Component {
     };
 
     render() {
-        const {classes, channelStore, isActive} = this.props;
-        const {channel} = channelStore;
+        const {classes, channelStore} = this.props;
+        const {channel, isActive} = channelStore;
         const {channelId: id, sender, recipient, value, canCanceledBefore, createdAt, status} = channel;
         return (
             <Paper>
