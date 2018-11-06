@@ -5,22 +5,28 @@ import com.acuerdo.channels.core.model.Payment
 import com.acuerdo.channels.core.model.Transaction
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 
-class ChannelSaveRequest(
+data class ChannelSaveRequest(
         val channel: Channel,
         val transaction: Transaction
 )
 
-class ChannelCloseRequest(
+data class ChannelCloseRequest(
         val channelId: String,
         val transaction: Transaction
 )
 
-class ChannelResponse(
+data class ChannelResponse(
         @JsonUnwrapped val channel: Channel,
         val payments: List<Payment>,
         val transactions: List<Transaction>
 )
 
-class PaymentSignature(
+data class PaymentSignature(
         val signature: String
+)
+
+data class Login(
+        val account: String,
+        val signature: String,
+        val signedMessage: String
 )

@@ -5,3 +5,8 @@ spring:
 
 web3:
   nodeUrl: ${WEB3_NODE_URL:http://localhost:8545}
+
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET:secret}
+    expiration: ${SECURITY_JWT_EXPIRATION:86400000}

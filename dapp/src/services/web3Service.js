@@ -15,6 +15,10 @@ class web3Service {
         return this.web3.eth.getBlock(numberOrHash);
     }
 
+    get isConnected() {
+        return this.web3 && this.account;
+    }
+
     sign(text) {
         return this.web3.eth.personal.sign(text, this.account);
     };

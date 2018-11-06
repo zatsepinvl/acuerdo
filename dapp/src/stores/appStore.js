@@ -1,5 +1,6 @@
 import {action, observable} from 'mobx';
 import {channelService, web3Service} from '../services';
+import authService from "../services/authService";
 
 class appStore {
     @observable appLoaded;
@@ -9,25 +10,26 @@ class appStore {
     }
 
     async _init() {
-        await this._checkAndSet([
-            web3Service.whenLoad,
-            channelService.whenLoad,
-        ], this.setAppLoaded);
-    }
-
-    async _checkAndSet(promises, setter) {
         try {
-            await Promise.all(promises);
-        }
-        catch (error) {
+            await Promise.all([
+                web3Service.whenLoad,
+                channelService.whenLoad,
+            ]).then(() => {
+                if (web3Service.isConnected) {
+                    return authService.login()
+                }
+            })
+        } catch (error) {
             console.error(error)
         }
         finally {
-            setter(true);
+            this.setAppLoaded(true);
         }
+
     }
 
-    @action setAppLoaded = value => this.appLoaded = value;
+    @action
+    setAppLoaded = value => this.appLoaded = value;
 }
 
 export default new appStore();

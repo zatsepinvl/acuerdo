@@ -30,7 +30,7 @@ class PayoutDialog extends React.Component {
         if (this.error) {
             return;
         }
-        const value = BigNumber(this.state.value).times(10 ** 18);
+        const value = BigNumber(this.value).times(10 ** 18);
         this.props.onPayout(value);
     };
 

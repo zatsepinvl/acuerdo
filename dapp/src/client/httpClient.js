@@ -23,7 +23,15 @@ const payments = {
         put(`/channels/${channelId}/payments/${paymentId}`, {signature})
 };
 
+const auth = {
+    login: login => post(`/auth/login`, login),
+    logout: () => post(`/auth/logout`),
+    me: () => get(`/auth/me`)
+};
+
+
 export default {
     channels,
-    payments
+    payments,
+    auth
 }
