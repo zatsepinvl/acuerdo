@@ -8,12 +8,12 @@ class wsClient {
     connected = false;
     _subscriptions = [];
 
-    constructor() {
-        this._connect();
-    }
-
     subscribe = (destination, handler) => {
         const subscription = {destination, handler};
+        //lazy connecting
+        if (this._subscriptions.length === 0) {
+            this._connect();
+        }
         this._subscriptions.push(subscription);
         if (this.connected) {
             this._subscribe(subscription);

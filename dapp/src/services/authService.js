@@ -9,31 +9,29 @@ class authService {
         return httpClient.auth.logout();
     }
 
-    login() {
-        return this._checkLogin()
-            .then(({username}) => {
-                if (username !== web3Service.account) {
-                    this.logout().then(() => {
-                        this.login();
-                    });
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    return web3Service.sign(SIGNED_MESSAGE).then(signature => {
-                        return httpClient.auth.login({
-                            account: web3Service.account,
-                            signature: signature,
-                            signedMessage: SIGNED_MESSAGE
-                        });
-                    });
-                }
-                throw err;
-            });
+    async login() {
+        const signature = await web3Service.sign(SIGNED_MESSAGE);
+        return httpClient.auth.login({
+            account: web3Service.account,
+            signature: signature,
+            signedMessage: SIGNED_MESSAGE
+        });
     }
 
-    _checkLogin() {
+    _me() {
         return httpClient.auth.me();
+    }
+
+    async getLoggedAccount() {
+        try {
+            return (await this._me()).username;
+        }
+        catch (error) {
+            if (error.response.status === 401) {
+                return undefined;
+            }
+            throw  error;
+        }
     }
 }
 

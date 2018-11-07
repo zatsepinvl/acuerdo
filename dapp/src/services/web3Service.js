@@ -28,6 +28,9 @@ class web3Service {
     };
 
     _load = async () => {
+        if (!Web3.givenProvider) {
+            return;
+        }
         this.web3 = new Web3(Web3.givenProvider);
         window.w = this.web3;
         const [accounts, netId] = await Promise.all([

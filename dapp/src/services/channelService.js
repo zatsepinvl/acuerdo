@@ -15,6 +15,9 @@ class channelService {
 
     async _load() {
         await web3Service.whenLoad;
+        if (!web3Service.isConnected) {
+            return;
+        }
         const contract = await httpClient.channels.contract();
         this._channels = contractService.loadContract(contract);
         this.address = this._channels.options.address.toLowerCase();

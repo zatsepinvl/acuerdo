@@ -12,13 +12,13 @@ import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import HashView from "../common/HashView";
-import AmountView from "../common/AmountView";
-import TimeView from "../common/TimeView";
+import HashView from "../../common/HashView";
+import AmountView from "../../common/AmountView";
+import TimeView from "../../common/TimeView";
 
-import web3Service from "../services/web3Service";
-import Loader from "../common/Loader";
-import ChannelStatus from "../common/ChannelStatus";
+import web3Service from "../../services/web3Service";
+import Loader from "../../common/Loader";
+import ChannelStatus from "../../common/ChannelStatus";
 
 const styles = (theme) => ({
     root: {

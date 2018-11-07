@@ -17,18 +17,24 @@ a:hover {
     text-decoration: none;
 }
 
-.metamask-login-card-container {
+.into-step-container {
     height: 100vh;
     display: flex;
     background: #37474F;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
-.metamask-login-card-container .metamask-login-card {
+.into-step-container .logo {
+    margin-bottom: 30px;
+}
+
+.metamask-login-card {
     width: 400px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin: auto;
     padding: 20px;
 }
 
@@ -36,21 +42,22 @@ a:hover {
     line-height: 60px;
 }
 
-.metamask-need-card-container {
-    height: 100vh;
-    display: flex;
-    background: #37474F;
-}
-
-.metamask-need-card-container .metamask-need-card {
+.metamask-need-card {
     width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    margin: auto;
     padding: 20px;
 }
 
 .metamask-need-card .text {
     line-height: 60px;
+}
+
+.login-card {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 20px;
 }
