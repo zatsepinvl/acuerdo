@@ -39,17 +39,17 @@ class web3Service {
         ]);
         this.account = accounts.length && accounts[0].toLowerCase();
         this.netId = netId;
-        this._subscribeOnUpdate();
     };
 
-    _subscribeOnUpdate() {
+    onUserChanged(handler) {
         this.web3.currentProvider.publicConfigStore
-            .on('update', response => {
-                if (this.account !== response.selectedAddress) {
-                    window.location.reload();
+            .on('update', event => {
+                if ((this.account || event.selectedAddress)
+                    && this.account !== event.selectedAddress) {
+                    handler(event.selectedAddress)
                 }
             });
-    };
+    }
 
     splitSignature(signature) {
         signature = signature.substr(2);

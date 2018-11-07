@@ -24,7 +24,7 @@ class SecurityConfig(
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.requestMatchers()
-                /**/.antMatchers("/channels/**", "/auth/me")
+                /**/.antMatchers("/channels/**", "/auth/me", "/ws/**")
                 .and().addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
                 .authorizeRequests().anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(createAuthenticationEntryPoint())

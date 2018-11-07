@@ -1,21 +1,11 @@
-import web3Service from "./web3Service";
 import wsClient from "../client/wsClient";
+import web3Service from "./web3Service";
 
 class channelEventService {
-    whenLoaded;
     _subscriptions = [];
 
-    constructor() {
-        this.whenLoaded = this.init();
-    }
-
-    async init() {
-        await web3Service.whenLoad;
-        const account = web3Service.account;
-        if (!account) {
-            return;
-        }
-        wsClient.subscribe(`/topic/users/${account}/channels`, this._handle)
+    init() {
+        wsClient.subscribe(`/topic/user/${web3Service.account}/channels`, this._handle)
     }
 
     subscribe(subscriber) {

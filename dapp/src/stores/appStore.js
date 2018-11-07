@@ -1,6 +1,7 @@
 import {action, observable} from 'mobx';
 import {channelService, web3Service} from '../services';
 import authService from "../services/authService";
+import channelEventService from "../services/channelEventService";
 
 class appStore {
     @observable appLoaded = false;
@@ -16,6 +17,13 @@ class appStore {
                 web3Service.whenLoad,
                 channelService.whenLoad,
             ]);
+            if (web3Service.web3) {
+                web3Service.onUserChanged(() => {
+                    authService.logout();
+                    window.location.reload();
+                });
+            }
+
             if (!web3Service.isConnected) {
                 return;
             }
@@ -23,7 +31,7 @@ class appStore {
             if (loggedAccount && loggedAccount !== web3Service.account) {
                 await authService.logout();
             } else if (loggedAccount === web3Service.account) {
-                this.setLoggedIn(true);
+                this._login();
             }
         }
         catch (error) {
@@ -42,7 +50,12 @@ class appStore {
 
     async login() {
         await authService.login();
+        this._login();
+    }
+
+    _login() {
         this.setLoggedIn(true);
+        channelEventService.init();
     }
 }
 

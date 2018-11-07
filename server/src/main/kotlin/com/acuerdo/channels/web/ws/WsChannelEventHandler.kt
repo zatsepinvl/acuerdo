@@ -15,6 +15,6 @@ class WsChannelEventHandler(
     }
 
     private fun sendUserChannelEvent(to: String, event: ChannelEvent) {
-        messagingTemplate.convertAndSend("/topic/users/$to/channels", event)
+        messagingTemplate.convertAndSend("/topic/user/$to/channels", event)
     }
 }
