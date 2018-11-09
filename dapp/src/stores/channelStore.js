@@ -48,6 +48,11 @@ class channelsStore {
             .sort((a, b) => moment(b.createdAt).diff(a.createdAt));
     }
 
+    @computed
+    get transactions() {
+        return this.channel.transactions;
+    }
+
     constructor() {
         channelEventService.subscribe(event => {
             if (this.loaded) {

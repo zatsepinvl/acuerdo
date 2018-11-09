@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
 
 import HashView from "../../common/HashView";
 import AmountView from "../../common/AmountView";
@@ -20,20 +19,12 @@ const styles = (theme) => ({
     title: {
         flexGrow: 1
     },
-    button: {
-        margin: theme.spacing.unit,
-    },
 });
 
 
 @inject('channelStore')
 @observer
 class ChannelDetails extends React.Component {
-
-    close = () => {
-        const {payments, closeChannel} = this.props.channelStore;
-        closeChannel(payments[0]);
-    };
 
     render() {
         const {classes, channelStore} = this.props;
@@ -46,14 +37,6 @@ class ChannelDetails extends React.Component {
                         Channel
                     </Typography>
                     <React.Fragment>
-                        {canClose && (
-                            <Button variant="contained"
-                                    color="secondary"
-                                    className={classes.button}
-                                    onClick={this.close}>
-                                Close
-                            </Button>
-                        )}
                     </React.Fragment>
                 </Toolbar>
                 <List>

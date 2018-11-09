@@ -31,7 +31,7 @@ class Channel extends React.Component {
     }
 
     render() {
-        const {loaded, channel} = this.props.channelStore;
+        const {loaded} = this.props.channelStore;
         if (!loaded) {
             return <Loader caption="Loading channel..."/>;
         }
@@ -45,7 +45,7 @@ class Channel extends React.Component {
                         <ChannelPayments/>
                     </Grid>
                     <Grid item xs={4}>
-                        <ChannelTransactions channel={channel}/>
+                        <ChannelTransactions/>
                     </Grid>
                 </Grid>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import {inject, observer} from "mobx-react";
 
 import {withStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -20,10 +20,12 @@ const txEventMapping = {
 
 const styles = {};
 
+@inject('channelStore')
+@observer
 class ChannelTransactions extends React.PureComponent {
 
     renderTransactions() {
-        const transactions = this.props.channel.transactions || [];
+        const transactions = this.props.channelStore.transactions;
         return (
             <List>
                 {transactions.map(tx => {
@@ -62,8 +64,5 @@ class ChannelTransactions extends React.PureComponent {
     }
 }
 
-ChannelTransactions.propTypes = {
-    channel: PropTypes.object.isRequired
-};
 
 export default withStyles(styles)(ChannelTransactions);

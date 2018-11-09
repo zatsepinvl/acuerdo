@@ -18,7 +18,8 @@ import PayoutDialog from "./PayoutDialog";
 import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAll from '@material-ui/icons/DoneAll';
-import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
+import MonetizationOn from '@material-ui/icons/MonetizationOn';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const styles = (theme) => ({
     paymentsTitle: {
@@ -44,6 +45,10 @@ class ChannelPayments extends React.Component {
         this.payoutDialogOpen = !this.payoutDialogOpen;
     };
 
+    close = (payment) => () => {
+        this.props.channelStore.closeChannel(payment);
+    };
+
     onPayout = (value) => {
         const {savePayment, channel} = this.props.channelStore;
         savePayment({
@@ -54,7 +59,7 @@ class ChannelPayments extends React.Component {
             .catch(console.error);
     };
 
-    sign = (payment) => {
+    sign = (payment) => () => {
         this.props.channelStore.signPayment(payment);
     };
 
@@ -69,29 +74,47 @@ class ChannelPayments extends React.Component {
     }
 
     renderPaymentsList() {
-        const {payments, isRecipient} = this.props.channelStore;
+        const {payments, isSender, isRecipient, isActive} = this.props.channelStore;
         if (!payments.length) {
             return this.renderNoPayments();
         }
         return (<List>
             {payments.map(payment => {
                 const {paymentId, value, createdAt, recipientSignature} = payment;
+                const canSign = isActive && isRecipient && !recipientSignature;
+                const canCloseBy = isActive && ((isSender && recipientSignature) || isRecipient);
                 return (
                     <ListItem key={paymentId}>
                         <ListItemIcon>
-                            {recipientSignature ? <DoneAll/> : <DoneIcon/>}
+                            {recipientSignature ?
+                                <Tooltip title="Signed by both">
+                                    <DoneAll/>
+                                </Tooltip> :
+                                <Tooltip title="Signed by sender">
+                                    <DoneIcon/>
+                                </Tooltip>
+                            }
                         </ListItemIcon>
                         <ListItemText
                             primary={<AmountView value={value} currency="ETH"/>}
                             secondary={<TimeView time={createdAt}/>}
                         />
-                        {isRecipient && !recipientSignature && (
-                            <ListItemSecondaryAction>
-                                <IconButton color="primary">
-                                    <AssignmentTurnedIn onClick={() => this.sign(payment)}/>
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        )}
+                        <ListItemSecondaryAction>
+                            {canSign && (
+                                <Tooltip title="Sign payment">
+                                    <IconButton color="primary">
+                                        <DoneAll onClick={this.sign(payment)}/>
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                            {canCloseBy && (
+                                <Tooltip title="Close channel and withdraw money">
+                                    <IconButton color="secondary">
+                                        <MonetizationOn onClick={this.close(payment)}/>
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                        </ListItemSecondaryAction>
                     </ListItem>
                 )
             })}
