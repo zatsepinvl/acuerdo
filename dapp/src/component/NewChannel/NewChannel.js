@@ -122,24 +122,24 @@ class NewChannel extends React.Component {
                             margin="normal"
                         />
                         <TextField
-                            id="fee"
-                            disabled
-                            label="Fee"
-                            defaultValue={currencyView(fee, 18) + ' ETH'}
-                            className={classes.textField}
-                            margin="normal"
-                            helperText="Fixed amount of fee need to pay on channel creation"
-                        />
-                        <TextField
                             required
                             id="timeout"
-                            label="Timeout in days"
+                            label="Duration days"
                             value={this.values.timeout}
                             onChange={this.handleChange('timeout')}
                             placeholder="2"
                             className={classes.textField}
                             margin="normal"
-                            helperText="In it time you can cancel channel and refund full amount"
+                            helperText="As this time pasted you can cancel channel and refund full amount"
+                        />
+                        <TextField
+                            id="fee"
+                            disabled
+                            label="Acuerdo Service Fee"
+                            defaultValue={currencyView(fee, 18) + ' ETH'}
+                            className={classes.textField}
+                            margin="normal"
+                            helperText="Fixed amount of fee need to pay on channel creation"
                         />
                     </div>
                     <Toolbar className={classes.toolbar}>
