@@ -3,6 +3,7 @@ import channelService from "./channelService";
 import contractService from "./contractService";
 import transferService from "./transferService";
 import paymentsService from "./paymentsService";
+import downloadService from "./downloadService";
 
 export {
     web3Service,
@@ -10,4 +11,5 @@ export {
     transferService,
     channelService,
     paymentsService,
+    downloadService
 }

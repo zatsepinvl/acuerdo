@@ -1,6 +1,7 @@
 import React from 'react';
 import {action, observable} from 'mobx';
 import {inject, observer} from "mobx-react";
+import moment from 'moment';
 
 import {withStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -19,7 +20,9 @@ import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAll from '@material-ui/icons/DoneAll';
 import MonetizationOn from '@material-ui/icons/MonetizationOn';
+import CloudDownload from '@material-ui/icons/CloudDownload';
 import Tooltip from '@material-ui/core/Tooltip';
+import {downloadService} from "../../services";
 
 const styles = (theme) => ({
     paymentsTitle: {
@@ -61,6 +64,15 @@ class ChannelPayments extends React.Component {
 
     sign = (payment) => () => {
         this.props.channelStore.signPayment(payment);
+    };
+
+    download = () => {
+        const payments = this.props.channelStore.payments;
+        downloadService.download(
+            JSON.stringify(payments),
+            `payments-${moment()}.json`,
+            'application/json'
+        );
     };
 
     renderNoPayments() {
@@ -123,7 +135,7 @@ class ChannelPayments extends React.Component {
 
     render() {
         const {classes, channelStore} = this.props;
-        const {isSender, isActive} = channelStore;
+        const {isSender, isActive, payments} = channelStore;
         return (
             <React.Fragment>
                 <Paper>
@@ -131,6 +143,11 @@ class ChannelPayments extends React.Component {
                         <Typography variant="title" className={classes.paymentsTitle}>
                             Payments
                         </Typography>
+                        {!!payments.length && (
+                            <IconButton color="primary">
+                                <CloudDownload onClick={this.download}/>
+                            </IconButton>
+                        )}
                         {isSender && isActive && (
                             <Button variant="contained"
                                     color="secondary"
