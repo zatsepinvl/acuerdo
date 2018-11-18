@@ -1,6 +1,6 @@
-[Logo](./docs/images/logo-colored.png)
+<img src="./docs/images/logo-colored.png" width=400/>
 
-Ethereum Payment DApp on Payment Channels
+_Ethereum Payment DApp on Payment Channels_
 
 ## About
 Acuerdo is a DApp based on Payment Channels for Ethereum users 
