@@ -1,4 +1,5 @@
-# Acuerdo
+[Logo](./docs/images/logo-colored.png)
+
 Ethereum Payment DApp on Payment Channels
 
 ## About
