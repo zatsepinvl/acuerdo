@@ -95,7 +95,7 @@ contract Channels {
         Channel storage channel = channels[channelId];
         require(channel.sender != address(0));
         require(msg.sender == channel.sender);
-        require(channel.canCanceledAt <= now);
+        require(now > channel.canCanceledAt);
         channel.sender.transfer(channel.value);
         delete channels[channelId];
         emit ChannelCanceled(channelId);
@@ -104,16 +104,5 @@ contract Channels {
     function getPaymentId(bytes32 channelId, uint256 value)
     public view returns (bytes32) {
         return keccak256(abi.encodePacked(channelId, value));
-    }
-
-    function resolveDispute(bytes32 channelId, uint256 amountToSender, uint256 amountToRecipient)
-    onlyOwner external {
-        Channel storage channel = channels[channelId];
-        require(channel.sender != address(0));
-        require((amountToSender + amountToRecipient) == channel.value);
-        channel.sender.transfer(amountToSender);
-        channel.recipient.transfer(amountToRecipient);
-        delete channels[channelId];
-        emit ChannelClosedByDispute(channelId);
     }
 }

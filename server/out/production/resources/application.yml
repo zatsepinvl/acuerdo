@@ -1,10 +1,13 @@
 spring:
   data:
     mongodb:
-      uri: ${MONGODB_URL:mongodb://192.168.99.100:27017/acuerdo}
+      uri: ${MONGODB_URL:mongodb://localhost:27017/acuerdo}
 
 web3:
   nodeUrl: ${WEB3_NODE_URL:http://localhost:8545}
+  log:
+    listener:
+      delay: ${WEB3_LOG_LISTENER_DELAY:1000}
 
 security:
   jwt:

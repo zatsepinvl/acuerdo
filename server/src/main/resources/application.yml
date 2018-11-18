@@ -5,6 +5,9 @@ spring:
 
 web3:
   nodeUrl: ${WEB3_NODE_URL:http://localhost:8545}
+  log:
+    listener:
+      delay: ${WEB3_LOG_LISTENER_DELAY:1000}
 
 security:
   jwt:

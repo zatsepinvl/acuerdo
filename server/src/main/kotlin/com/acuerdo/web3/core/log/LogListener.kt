@@ -20,7 +20,7 @@ class LogListener(
         val listenerDataRepository: ListenerDataRepository,
         val transactionHandlers: List<TransactionHandler>
 ) {
-    @Scheduled(fixedDelayString = "\${web3.log.listener.delay:1000}")
+    @Scheduled(fixedDelayString = "\${web3.log.listener.delay}")
     fun listen() {
         val netId = web3Settings.netId
         val currentBlock = web3j.ethBlockNumber().send().blockNumber

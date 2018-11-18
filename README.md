@@ -1,2 +1,2 @@
 # Acuerdo
-Ethereum BTC L2 Scaling Solution on Payment Channels
+Ethereum Payment DApp on Payment Channels
