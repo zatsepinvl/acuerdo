@@ -26,8 +26,19 @@ Acuerdo provides fast and cheap way to pay for services or goods.
 
 ## Build and Run
 
-```
-cd deployment && ./start.sh (:tbd)
-```
+### Requirements
+* docker
+* docker-compose
+* npm
+
+### Start
+* cd deployment
+* ./install.global.sh
+* ./start.testrpc.sh
+* go to another terminal window
+* ./start.acuerdo.sh
+    * test ethereum node http://localhost:8545
+    * server http://localhost:8080
+    * webapp http://localhost
 
 

@@ -4,11 +4,9 @@ volumes:
   acuredo-mongo-data:
 
 services:
-  testrpc:
-    image: trufflesuite/ganache-cli:v6.1.8
-    ports:
-      - ${TESTRPC_PORT:-8545}:8545
-    command: -m "inmate luxury business before add script battle must arch speak pact ritual" -i 4447
+
+  #todo
+  #testrpc:
 
   mongodb:
     image: mongo:4.1
@@ -16,4 +14,24 @@ services:
       - ${MONGODB_PORT:-27017}:27017
     volumes:
       - acuredo-mongo-data:/data/db
+
+  server:
+    build:
+      context: ../server
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/acuerdo
+      WEB3_NODE_URL: http://testrpc:8545
+    ports:
+      - 8080:8080
+
+  webapp:
+    build:
+      context: ../dapp
+    depends_on:
+      - server
+    ports:
+      - 80:80
+
 
