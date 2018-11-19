@@ -37,8 +37,8 @@ Acuerdo provides fast and cheap way to pay for services or goods.
 * `./start.testrpc.sh`
 * go to another terminal window
 * `./start.acuerdo.sh`
-    * test ethereum node http://<DOCKER_HOST>:8545
-    * server http://<DOCKER_HOST>:8080
-    * webapp http://<DOCKER_HOST>:80
+    * test ethereum node _http://<DOCKER_HOST>:8545_
+    * server _http://<DOCKER_HOST>:8080_
+    * webapp _http://<DOCKER_HOST>:80_
 
 
