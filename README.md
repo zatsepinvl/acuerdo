@@ -32,11 +32,11 @@ Acuerdo provides fast and cheap way to pay for services or goods.
 * npm
 
 ### Start
-* cd deployment
-* ./install.global.sh
-* ./start.testrpc.sh
+* `cd deployment`
+* `./install.global.sh`
+* `./start.testrpc.sh`
 * go to another terminal window
-* ./start.acuerdo.sh
+* `./start.acuerdo.sh`
     * test ethereum node http://localhost:8545
     * server http://localhost:8080
     * webapp http://localhost
