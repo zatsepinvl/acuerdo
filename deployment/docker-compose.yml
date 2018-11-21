@@ -1,34 +1,55 @@
 version: "3"
 
 volumes:
-  acuredo-mongo-data:
+  testrpc-data:
+  mongodb-data:
 
 services:
 
-  #todo
-  #testrpc:
+  testrpc:
+    image: trufflesuite/ganache-cli
+    container_name: testrpc
+    volumes:
+      - testrpc-data:/data
+    ports:
+      - 8545:8545
+    command: -m "inmate luxury business before add script battle must arch speak pact ritual" -i 4447 --db=/data
+
+  smart-contracts:
+    image: acuerdo-smart-contracts
+    build:
+      context: ../smart-contract
+      args:
+        ETH_NODE_URL: ${ETH_NODE_URL:-http://localhost:8545}
+        ETH_NETWORK: ${ETH_NETWORK:-testrpc}
+    depends_on:
+      - testrpc
 
   mongodb:
     image: mongo:4.1
+    container_name: mongodb
     ports:
       - ${MONGODB_PORT:-27017}:27017
     volumes:
-      - acuredo-mongo-data:/data/db
+      - mongodb-data:/data/db
 
   server:
     build:
       context: ../server
+    container_name: server
     depends_on:
       - mongodb
+      - smart-contracts
     environment:
-      MONGODB_URL: mongodb://mongodb:27017/acuerdo
-      WEB3_NODE_URL: http://testrpc:8545
+       MONGODB_URL: mongodb://mongodb:27017/acuerdo
+       WEB3_NODE_URL: http://testrpc:8545
     ports:
       - 8080:8080
 
   webapp:
     build:
       context: ../dapp
+    container_name: webapp
     depends_on:
       - server
     ports:

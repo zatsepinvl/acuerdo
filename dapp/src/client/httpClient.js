@@ -13,7 +13,7 @@ const channels = {
     getById: (channelId) => get(`/channels/${channelId}`),
     save: (channel) => post('/channels', channel),
     close: ({channelId, transaction}) => put(`/channels/${channelId}`, transaction),
-    contract: () => get(`/web3/contracts/channels`)
+    contract: () => get(`/web3/contracts/Channels`)
 };
 
 const payments = {

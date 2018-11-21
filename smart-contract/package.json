@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "ganache-cli": "^6.1.8"
+    "dotenv": "^5.0.1",
+    "truffle-hdwallet-provider": "0.0.6"
   },
   "scripts": {
     "migrate": "sh migrate.sh"

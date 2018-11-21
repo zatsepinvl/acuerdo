@@ -26,7 +26,7 @@ class Web3Controller(
 
     @Autowired
     fun init(channels: Channels) {
-        addresses["channels"] = channels.contractAddress
+        addresses["Channels"] = channels.contractAddress
     }
 
     @GetMapping("/settings")

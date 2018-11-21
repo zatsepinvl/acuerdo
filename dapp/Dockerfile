@@ -1,6 +1,14 @@
+FROM node:11 as webapp-builder
+COPY package.json .
+RUN npm install
+COPY public ./public
+COPY src ./src
+COPY .env .
+RUN npm run build
+
 FROM openresty/openresty:alpine
 ARG NGINX_CONFIG=nginx/local.nginx
-COPY build /var/www
+COPY --from=webapp-builder /build /var/www
 COPY $NGINX_CONFIG /etc/nginx/nginx.conf
 COPY nginx/mime.types /etc/nginx/mime.types
 RUN mkdir -p /var/log/nginx

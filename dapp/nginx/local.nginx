@@ -20,7 +20,7 @@ http {
     server {
         listen 80;
 
-        location /api {
+        location /api/ {
             proxy_pass http://server:8080/;
             proxy_redirect     off;
             proxy_set_header   Host $host;
@@ -34,9 +34,6 @@ http {
             proxy_set_header Connection "upgrade";
         }
 
-        location ~ (^/landing) {
-            try_files $uri $1/index.html;
-        }
 
         location / {
             index index.html;

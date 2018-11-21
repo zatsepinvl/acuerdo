@@ -102,7 +102,7 @@ contract Channels {
     }
 
     function getPaymentId(bytes32 channelId, uint256 value)
-    public view returns (bytes32) {
+    public pure returns (bytes32) {
         return keccak256(abi.encodePacked(channelId, value));
     }
 }

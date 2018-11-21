@@ -1,0 +1,29 @@
+*.css text eol=crlf
+*.scss text eol=crlf
+*.html text eol=crlf
+*.xhtml text eol=crlf
+*.js text eol=crlf
+*.xml text eol=crlf
+*.svg text eol=crlf
+*.yaml text eol=crlf
+*.yml text eol=crlf
+*.md text eol=crlf
+*.java text eol=crlf
+*.ts text eol=crlf
+*.tsx text eol=crlf
+*.jsp text eol=crlf
+*.jspx text eol=crlf
+*.json text eol=crlf
+*.bat text eol=crlf
+*.sh text eol=lf
+*.md text eol=crlf
+*.eot binary
+*.ttf binary
+*.woff binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+
+Dockerfile text eol=crlf
+LICENSE text eol=crlf

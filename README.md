@@ -25,20 +25,22 @@ Acuerdo provides fast and cheap way to pay for services or goods.
 
 
 ## Build and Run
+To build and run Acuerdo all you need is `docker` and `docker-compose`. 
+It's archived by using [docker multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/).
 
 ### Requirements
-* docker
-* docker-compose
-* npm
+* docker 18+
+* docker-compose 1.20+
 
 ### Start
-* cd deployment
-* ./install.global.sh
-* ./start.testrpc.sh
-* go to another terminal window
-* ./start.acuerdo.sh
-    * test ethereum node http://localhost:8545
-    * server http://localhost:8080
-    * webapp http://localhost
+* `cd deployment`
+* `cp template.env .env`
+* For Windows docker-tool-box set ETH_NODE_URL=http://<DOCKER_HOST>:8545 in .env
+* `docker-compose up -d testrpc` (run local test Ethereum network)
+* `docker-compose up --build -d`
 
+Components:
+* testrpc `http://<DOCKER_HOST>:8545`
+* server `http://<DOCKER_HOST>:8080`
+* webapp `http://<DOCKER_HOST>:80`
 
