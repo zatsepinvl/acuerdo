@@ -48,7 +48,7 @@ services:
 
   webapp:
     build:
-      context: ../dapp
+      context: ../webapp
     container_name: webapp
     depends_on:
       - server
