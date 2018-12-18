@@ -26,7 +26,7 @@ Acuerdo provides fast and cheap way to pay for services or goods.
 
 ## Build and Run
 To build and run Acuerdo all you need is `docker` and `docker-compose`. 
-It's archived by using [docker multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/).
+This is made by [docker multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/).
 
 ### Requirements
 * docker 18+
