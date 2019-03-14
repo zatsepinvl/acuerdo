@@ -12,7 +12,7 @@ data class Channel(
         val sender: String,
         val recipient: String,
         val value: BigInteger,
-        var canCanceledBefore: Instant? = null,
+        var canCanceledAfter: Instant? = null,
         var createdAt: Instant? = null,
         val submittedAt: Instant = Instant.now(),
         var status: ChannelStatus = ChannelStatus.DRAFT,

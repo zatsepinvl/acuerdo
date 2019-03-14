@@ -1,11 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Channels {
 
     /*--- Structures ---*/
     struct Channel {
-        address sender;
-        address recipient;
+        address payable sender;
+        address payable recipient;
         uint256 value;
         uint256 canCanceledAt;
     }
@@ -42,13 +42,13 @@ contract Channels {
         fee = _fee;
     }
 
-    function withdrawTotalFee(address to)
+    function withdrawTotalFee(address payable to)
     external onlyOwner {
         to.transfer(totalFee);
         totalFee = 0;
     }
 
-    function open(bytes32 channelId, address recipient, uint256 timeout)
+    function open(bytes32 channelId, address payable recipient, uint256 timeout)
     external payable {
         require(channels[channelId].sender == address(0), "Channel with the same channelId already exists.");
         Channel memory channel = Channel({

@@ -28,8 +28,8 @@ class ChannelDetails extends React.Component {
 
     render() {
         const {classes, channelStore} = this.props;
-        const {channel, canClose} = channelStore;
-        const {channelId, sender, recipient, value, canCanceledBefore, createdAt, status} = channel;
+        const {channel} = channelStore;
+        const {channelId, sender, recipient, value, canCanceledAfter, createdAt, status} = channel;
         return (
             <Paper>
                 <Toolbar>
@@ -71,9 +71,9 @@ class ChannelDetails extends React.Component {
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Can canceled before"/>
+                        <ListItemText primary="Can canceled after"/>
                         <Typography variant="subheading">
-                            <TimeView time={canCanceledBefore}/>
+                            <TimeView time={canCanceledAfter}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
