@@ -1,4 +1,4 @@
-package com.acuerdo.channels.web.security
+package com.acuerdo.security
 
 import org.springframework.util.StringUtils
 import java.util.*

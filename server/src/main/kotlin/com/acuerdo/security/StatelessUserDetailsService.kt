@@ -1,4 +1,4 @@
-package com.acuerdo.channels.web.security
+package com.acuerdo.security
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User

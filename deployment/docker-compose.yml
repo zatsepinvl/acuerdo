@@ -33,12 +33,19 @@ services:
     volumes:
       - mongodb-data:/data/db
 
+  redis:
+    image: redis:4
+    container_name: redis
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+
   server:
     build:
       context: ../server
     container_name: server
     depends_on:
       - mongodb
+      - redis
       - smart-contracts
     environment:
        MONGODB_URL: mongodb://mongodb:27017/acuerdo

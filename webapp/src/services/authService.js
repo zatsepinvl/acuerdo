@@ -10,11 +10,13 @@ class authService {
     }
 
     async login() {
-        const signature = await web3Service.sign(SIGNED_MESSAGE);
+        const {requestId, signedMessage} = await httpClient.auth.loginRequest();
+        const signature = await web3Service.sign(signedMessage);
         return httpClient.auth.login({
             account: web3Service.account,
             signature: signature,
-            signedMessage: SIGNED_MESSAGE
+            signedMessage: signedMessage,
+            requestId: requestId
         });
     }
 

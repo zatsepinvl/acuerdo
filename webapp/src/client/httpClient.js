@@ -24,6 +24,7 @@ const payments = {
 };
 
 const auth = {
+    loginRequest: () => get(`/auth/login`),
     login: login => post(`/auth/login`, login),
     logout: () => post(`/auth/logout`),
     me: () => get(`/auth/me`)

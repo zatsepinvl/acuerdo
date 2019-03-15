@@ -1,4 +1,4 @@
-package com.acuerdo.channels.web.security.jwt
+package com.acuerdo.security.jwt
 
 import io.jsonwebtoken.Claims
 import java.util.*

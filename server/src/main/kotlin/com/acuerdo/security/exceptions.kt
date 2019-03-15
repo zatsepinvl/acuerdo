@@ -1,3 +1,3 @@
-package com.acuerdo.channels.web
+package com.acuerdo.security
 
 class AuthenticationException(message: String?) : RuntimeException(message)

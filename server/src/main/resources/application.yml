@@ -2,6 +2,8 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URL:mongodb://localhost:27017/acuerdo}
+  redis:
+    url: ${REDIS_URL:redis://localhost:6379}
 
 web3:
   nodeUrl: ${WEB3_NODE_URL:http://localhost:8545}

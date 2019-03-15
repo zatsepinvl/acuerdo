@@ -1,11 +1,7 @@
-package com.acuerdo.channels.web.controller
+package com.acuerdo.security
 
-import com.acuerdo.channels.web.AuthenticationException
-import com.acuerdo.channels.web.Login
-import com.acuerdo.channels.web.security.AuthRequestService
-import com.acuerdo.channels.web.security.clearCookies
-import com.acuerdo.channels.web.security.jwt.JWT_TOKEN_COOKIE_NAME
-import com.acuerdo.channels.web.security.jwt.JwtTokenService
+import com.acuerdo.security.jwt.JWT_TOKEN_COOKIE_NAME
+import com.acuerdo.security.jwt.JwtTokenService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
@@ -22,6 +18,11 @@ class AuthController(
         private val requestManger: AuthRequestService,
         private val jwtTokenService: JwtTokenService
 ) {
+
+    @GetMapping("/login")
+    fun loginRequest(): LoginRequest {
+        return requestManger.requestLogin()
+    }
 
     @PostMapping("/login")
     fun login(@Valid @RequestBody login: Login, response: HttpServletResponse) {

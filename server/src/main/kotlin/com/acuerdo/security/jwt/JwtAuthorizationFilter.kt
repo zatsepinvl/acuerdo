@@ -1,6 +1,6 @@
-package com.acuerdo.channels.web.security.jwt
+package com.acuerdo.security.jwt
 
-import com.acuerdo.channels.web.security.clearCookies
+import com.acuerdo.security.clearCookies
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

@@ -31,9 +31,3 @@ data class ChannelResponse(
 data class PaymentSignature(
         val signature: String
 )
-
-data class Login(
-        val account: String,
-        val signature: String,
-        val signedMessage: String
-)

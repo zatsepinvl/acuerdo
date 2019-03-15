@@ -1,7 +1,7 @@
-package com.acuerdo.channels.web.security
+package com.acuerdo.security
 
-import com.acuerdo.channels.web.security.jwt.JwtAuthorizationFilter
-import com.acuerdo.channels.web.security.jwt.JwtTokenService
+import com.acuerdo.security.jwt.JwtAuthorizationFilter
+import com.acuerdo.security.jwt.JwtTokenService
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
