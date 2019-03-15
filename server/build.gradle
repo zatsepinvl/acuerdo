@@ -37,7 +37,7 @@ dependencies {
     compile "org.springframework.security:spring-security-messaging"
     compile "org.springframework.boot:spring-boot-starter-data-redis"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
-    compile 'io.jsonwebtoken:jjwt:0.9.0'
+    compile "io.jsonwebtoken:jjwt:0.9.0"
     compile "org.web3j:core:3.6.0"
     compile "io.springfox:springfox-swagger2:2.9.2"
     testCompile "junit:junit"
@@ -50,3 +50,16 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+sourceSets.main.java.srcDirs += "build/generated-sources"
+sourceSets.main.resources.srcDirs += "build/generated-resources"
+
+task generateContracts(type: Exec) {
+    workingDir "$projectDir"
+    commandLine "sh", "./web3/generate.sh",
+            "${buildDir}/generated-resources/contracts",
+            "${buildDir}/generated-sources",
+            "Channels.json"
+}
+
+compileKotlin.dependsOn generateContracts
