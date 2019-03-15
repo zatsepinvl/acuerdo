@@ -17,7 +17,8 @@ data class Channel(
         val submittedAt: Instant = Instant.now(),
         var status: ChannelStatus = ChannelStatus.DRAFT,
         var refundToSender: BigInteger? = null,
-        var releaseToRecipient: BigInteger? = null
+        var releaseToRecipient: BigInteger? = null,
+        var channelName: String?
 )
 
 enum class ChannelStatus {

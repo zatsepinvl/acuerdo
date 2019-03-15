@@ -64,6 +64,7 @@ class NewChannel extends React.Component {
         const {fee} = this.props.newChannelStore;
         const id = web3Service.web3.utils.sha3('' + new Date().getTime());
         const channel = {
+            channelName: this.values.channelName,
             channelId: id,
             sender: web3Service.account,
             recipient: this.values.recipient,
@@ -84,6 +85,10 @@ class NewChannel extends React.Component {
     renderForm() {
         const {classes, newChannelStore} = this.props;
         const {fee} = newChannelStore;
+        const defaultInputProps = {
+            margin: "normal",
+            className: classes.textField,
+        };
         return (
             <form className={classes.container} onSubmit={this.handleSubmit}>
                 <Paper>
@@ -94,12 +99,19 @@ class NewChannel extends React.Component {
                     </Toolbar>
                     <div className={classes.inputContainer}>
                         <TextField
+                            required
+                            id="channelName"
+                            label="Channel name"
+                            value={this.values.channelName}
+                            onChange={this.handleChange('channelName')}
+                            {...defaultInputProps}
+                        />
+                        <TextField
                             id="sender"
                             disabled
                             label="Sender address"
                             defaultValue={web3Service.account}
-                            className={classes.textField}
-                            margin="normal"
+                            {...defaultInputProps}
                         />
                         <TextField
                             required
@@ -108,8 +120,7 @@ class NewChannel extends React.Component {
                             value={this.values.recipient}
                             onChange={this.handleChange('recipient')}
                             placeholder="0x..."
-                            className={classes.textField}
-                            margin="normal"
+                            {...defaultInputProps}
                         />
                         <TextField
                             required
@@ -118,8 +129,7 @@ class NewChannel extends React.Component {
                             value={this.values.amount}
                             onChange={this.handleChange('amount')}
                             placeholder="1.0"
-                            className={classes.textField}
-                            margin="normal"
+                            {...defaultInputProps}
                         />
                         <TextField
                             required
@@ -128,8 +138,7 @@ class NewChannel extends React.Component {
                             value={this.values.timeout}
                             onChange={this.handleChange('timeout')}
                             placeholder="2"
-                            className={classes.textField}
-                            margin="normal"
+                            {...defaultInputProps}
                             helperText="As this time pasted you can cancel channel and refund full amount"
                         />
                         <TextField
@@ -137,8 +146,7 @@ class NewChannel extends React.Component {
                             disabled
                             label="Acuerdo Service Fee"
                             defaultValue={currencyView(fee, 18) + ' ETH'}
-                            className={classes.textField}
-                            margin="normal"
+                            {...defaultInputProps}
                             helperText="Fixed amount of fee need to pay on channel creation"
                         />
                     </div>

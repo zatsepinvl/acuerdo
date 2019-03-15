@@ -45,7 +45,8 @@ class ChannelsTransactionHandler(
                 canCanceledAfter = Instant.ofEpochSecond(event.canCanceledAt.longValueExact()),
                 createdAt = timestamp,
                 status = ChannelStatus.OPENED,
-                submittedAt = existingChannel?.submittedAt ?: Instant.now()
+                submittedAt = existingChannel?.submittedAt ?: Instant.now(),
+                channelName = existingChannel.channelName
         )
         val transaction = Transaction(
                 hash = ethTx.hash,

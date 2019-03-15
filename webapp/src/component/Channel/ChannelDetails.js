@@ -29,7 +29,7 @@ class ChannelDetails extends React.Component {
     render() {
         const {classes, channelStore} = this.props;
         const {channel, isSender, isRecipient} = channelStore;
-        const {channelId, sender, recipient, value, canCanceledAfter, createdAt, status} = channel;
+        const {channelName, channelId, sender, recipient, value, canCanceledAfter, createdAt, status} = channel;
         return (
             <Paper>
                 <Toolbar>
@@ -39,43 +39,49 @@ class ChannelDetails extends React.Component {
                 </Toolbar>
                 <List>
                     <ListItem>
-                        <ListItemText primary="Channel Id"/>
+                        <ListItemText secondary="Channel Name"/>
+                        <Typography variant="subheading">
+                            {channelName || '(none)'}
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText secondary="Channel Id"/>
                         <Typography variant="subheading">
                             <HashView hash={channelId}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary={`Sender ${isSender ? '(you)':''}`}/>
+                        <ListItemText secondary={`Sender ${isSender ? '(you)' : ''}`}/>
                         <Typography variant="subheading">
                             <HashView hash={sender}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary={`Recipient ${isRecipient ? '(you)':''}`}/>
+                        <ListItemText secondary={`Recipient ${isRecipient ? '(you)' : ''}`}/>
                         <Typography variant="subheading">
                             <HashView hash={recipient}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Deposited value"/>
+                        <ListItemText secondary="Deposited value"/>
                         <Typography variant="subheading">
                             <AmountView value={value} currency="ETH"/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Created at"/>
+                        <ListItemText secondary="Created at"/>
                         <Typography variant="subheading">
                             <TimeView time={createdAt}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Can canceled after"/>
+                        <ListItemText secondary="Can canceled after"/>
                         <Typography variant="subheading">
                             <TimeView time={canCanceledAfter}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Status"/>
+                        <ListItemText secondary="Status"/>
                         <Typography variant="subheading">
                             <ChannelStatus status={status}/>
                         </Typography>

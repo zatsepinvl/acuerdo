@@ -68,6 +68,7 @@ class ChannelsList extends React.Component {
             <Table>
                 <TableHead>
                     <TableRow>
+                        <TableCell>Channel Name</TableCell>
                         <TableCell>Channel Id</TableCell>
                         <TableCell>Sender</TableCell>
                         <TableCell>Recipient</TableCell>
@@ -78,13 +79,16 @@ class ChannelsList extends React.Component {
                 </TableHead>
                 <TableBody>
                     {channels.map(channel => {
-                        const {sender, recipient, value, createdAt, status, channelId: id} = channel;
+                        const {channelName, sender, recipient, value, createdAt, status, channelId: id} = channel;
                         return (
                             <TableRow key={id}
                                       className={classes.tableRow}
                                       hover
                                       onClick={event => this.handleChannelClicked(event, id)}>
-                                <TableCell component="th" scope="row">
+                                <TableCell>
+                                    {channelName || '(none)'}
+                                </TableCell>
+                                <TableCell>
                                     <HashView hash={id}/>
                                 </TableCell>
                                 <TableCell>
