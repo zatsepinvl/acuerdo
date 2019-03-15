@@ -75,6 +75,15 @@ class ChannelPayments extends React.Component {
         );
     };
 
+    downloadPayment = (payment) => () => {
+        const {channel} = this.props.channelStore;
+        downloadService.download(
+            JSON.stringify(payment),
+            `payment-${payment.paymentId}-${channel.channelId}.json`,
+            'application/json'
+        );
+    };
+
     renderNoPayments() {
         const {classes} = this.props;
         return (
@@ -112,6 +121,11 @@ class ChannelPayments extends React.Component {
                             secondary={<TimeView time={createdAt}/>}
                         />
                         <ListItemSecondaryAction>
+                            <Tooltip title="Download payment JSON">
+                                <IconButton color="primary">
+                                    <CloudDownload onClick={this.downloadPayment(payment)}/>
+                                </IconButton>
+                            </Tooltip>
                             {canSign && (
                                 <Tooltip title="Sign payment">
                                     <IconButton color="primary">
@@ -143,11 +157,13 @@ class ChannelPayments extends React.Component {
                         <Typography variant="title" className={classes.paymentsTitle}>
                             Payments
                         </Typography>
-                        {!!payments.length && (
-                            <IconButton color="primary">
-                                <CloudDownload onClick={this.download}/>
-                            </IconButton>
-                        )}
+                        {/*{!!payments.length && (
+                            <Tooltip title="Download payments JSON">
+                                <IconButton color="primary">
+                                    <CloudDownload onClick={this.download}/>
+                                </IconButton>
+                            </Tooltip>
+                        )}*/}
                         {isSender && isActive && (
                             <Button variant="contained"
                                     color="secondary"

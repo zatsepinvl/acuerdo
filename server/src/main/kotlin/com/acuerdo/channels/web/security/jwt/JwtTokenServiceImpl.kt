@@ -27,7 +27,7 @@ class JwtTokenServiceImpl(
     }
 
     override fun generateTokenCookie(token: String): Cookie {
-        return Cookie(JWT_TOKEN, token)
+        return Cookie(JWT_TOKEN_COOKIE_NAME, token)
                 .apply {
                     isHttpOnly = true
                     maxAge = (expiration / 1000).toInt()

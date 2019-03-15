@@ -8,6 +8,7 @@ import Loader from "../../common/Loader";
 import ChannelDetails from "./ChannelDetails";
 import ChannelPayments from "./ChannelPayments";
 import ChannelTransactions from "./ChannelTransactions";
+import ChannelPaymentStatus from "./ChannelPaymentStatus";
 
 const styles = {
     paymentsTitle: {
@@ -41,8 +42,13 @@ class Channel extends React.Component {
                     <Grid item xs={4}>
                         <ChannelDetails/>
                     </Grid>
-                    <Grid item xs={4}>
-                        <ChannelPayments/>
+                    <Grid item xs={4} container direction="column" spacing={16}>
+                        <Grid item>
+                            <ChannelPaymentStatus/>
+                        </Grid>
+                        <Grid item>
+                            <ChannelPayments/>
+                        </Grid>
                     </Grid>
                     <Grid item xs={4}>
                         <ChannelTransactions/>

@@ -3,7 +3,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import {withStyles} from '@material-ui/core/styles';
-import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
+import {action, observable} from 'mobx';
 import {inject, observer} from "mobx-react";
 import ethIconWhite from '../../images/eth_white.svg';
 import {getNetName} from "../../utils/ethUtils";
@@ -13,6 +14,8 @@ import NotFound from "../NotFound";
 import NewChannel from "../NewChannel/NewChannel";
 import Channel from "../Channel/Channel";
 import logoImage from "../../images/logo.svg";
+import ManualModeDialog from "../ManualMode/ManualModeDialog";
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
     root: {
@@ -50,6 +53,14 @@ const styles = theme => ({
 @observer
 class Home extends Component {
 
+    @observable manualModeDialogOpen = false;
+
+    @action
+    toggleManualModeDialog = () => {
+        this.manualModeDialogOpen = !this.manualModeDialogOpen;
+    };
+
+    @observable
     render() {
         const {account, netId} = web3Service;
         const netName = getNetName(netId);
@@ -63,6 +74,9 @@ class Home extends Component {
                                 <img src={logoImage} alt="" width="128" height="30"/>
                             </Link>
                             <div className={classes.flexGrow}/>
+                            <Button color="inherit" onClick={this.toggleManualModeDialog}>
+                                Close Channel Manually
+                            </Button>
                             <Typography variant="caption" color="inherit">
                                 {account}
                             </Typography>
@@ -82,6 +96,7 @@ class Home extends Component {
                             </Switch>
                         </div>
                     </main>
+                    <ManualModeDialog open={this.manualModeDialogOpen} onCancel={this.toggleManualModeDialog}/>
                 </div>
             </Router>
         );

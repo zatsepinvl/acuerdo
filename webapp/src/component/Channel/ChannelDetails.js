@@ -28,7 +28,7 @@ class ChannelDetails extends React.Component {
 
     render() {
         const {classes, channelStore} = this.props;
-        const {channel} = channelStore;
+        const {channel, isSender, isRecipient} = channelStore;
         const {channelId, sender, recipient, value, canCanceledAfter, createdAt, status} = channel;
         return (
             <Paper>
@@ -36,8 +36,6 @@ class ChannelDetails extends React.Component {
                     <Typography variant="title" className={classes.title}>
                         Channel
                     </Typography>
-                    <React.Fragment>
-                    </React.Fragment>
                 </Toolbar>
                 <List>
                     <ListItem>
@@ -47,13 +45,13 @@ class ChannelDetails extends React.Component {
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Sender"/>
+                        <ListItemText primary={`Sender ${isSender ? '(you)':''}`}/>
                         <Typography variant="subheading">
                             <HashView hash={sender}/>
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Recipient"/>
+                        <ListItemText primary={`Recipient ${isRecipient ? '(you)':''}`}/>
                         <Typography variant="subheading">
                             <HashView hash={recipient}/>
                         </Typography>

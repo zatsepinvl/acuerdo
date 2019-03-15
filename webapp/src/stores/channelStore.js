@@ -53,6 +53,11 @@ class channelsStore {
         return this.channel.transactions;
     }
 
+    @computed
+    get paymentStatus() {
+        return this.channel.paymentStatus;
+    }
+
     constructor() {
         channelEventService.subscribe(event => {
             if (this.loaded) {

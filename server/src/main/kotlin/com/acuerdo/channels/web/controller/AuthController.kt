@@ -2,10 +2,10 @@ package com.acuerdo.channels.web.controller
 
 import com.acuerdo.channels.web.AuthenticationException
 import com.acuerdo.channels.web.Login
+import com.acuerdo.channels.web.security.AuthRequestService
 import com.acuerdo.channels.web.security.clearCookies
-import com.acuerdo.channels.web.security.jwt.JWT_TOKEN
+import com.acuerdo.channels.web.security.jwt.JWT_TOKEN_COOKIE_NAME
 import com.acuerdo.channels.web.security.jwt.JwtTokenService
-import com.acuerdo.channels.web.service.AuthRequestService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
@@ -32,7 +32,7 @@ class AuthController(
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest, response: HttpServletResponse) {
         SecurityContextHolder.clearContext()
-        clearCookies(request, response, JWT_TOKEN)
+        clearCookies(request, response, JWT_TOKEN_COOKIE_NAME)
     }
 
     @GetMapping("/me")

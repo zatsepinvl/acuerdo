@@ -24,7 +24,7 @@ class JwtAuthorizationFilter(
             chain: FilterChain
     ) {
         val authToken = (request.cookies ?: arrayOf()).toList()
-                .filter { cookie -> cookie.name == JWT_TOKEN }
+                .filter { cookie -> cookie.name == JWT_TOKEN_COOKIE_NAME }
                 .map(Cookie::getValue)
                 .firstOrNull()
         var username: String? = null
@@ -47,7 +47,7 @@ class JwtAuthorizationFilter(
                 )
             } catch (ex: UsernameNotFoundException) {
                 SecurityContextHolder.clearContext()
-                clearCookies(response, JWT_TOKEN)
+                clearCookies(response, JWT_TOKEN_COOKIE_NAME)
                 chain.doFilter(request, response)
                 return
             }

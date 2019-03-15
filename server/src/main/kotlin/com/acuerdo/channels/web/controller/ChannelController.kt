@@ -5,6 +5,7 @@ import com.acuerdo.channels.core.service.PaymentService
 import com.acuerdo.channels.web.ChannelResponse
 import com.acuerdo.channels.web.ChannelSaveRequest
 import com.acuerdo.channels.web.PaymentSignature
+import com.acuerdo.channels.web.service.ChannelWebService
 import com.acuerdo.common.web.BadRequestException
 import com.acuerdo.common.web.ConflictException
 import com.acuerdo.common.web.NotFoundException
@@ -19,15 +20,13 @@ class ChannelController(
         val channelRepository: ChannelRepository,
         val paymentRepository: PaymentRepository,
         val transactionRepository: TransactionRepository,
-        val paymentService: PaymentService
+        val paymentService: PaymentService,
+        val channelWebService: ChannelWebService
 ) {
 
     @GetMapping("/{channelId}")
     fun getChannel(@PathVariable channelId: String): ChannelResponse {
-        val channel = channelRepository.getById(channelId)
-        val payments = paymentRepository.findAllByChannelId(channelId)
-        val transactions = transactionRepository.findAllByChannelId(channelId)
-        return ChannelResponse(channel, payments, transactions)
+        return channelWebService.getChannelById(channelId)
     }
 
     @GetMapping("/users/{username}")

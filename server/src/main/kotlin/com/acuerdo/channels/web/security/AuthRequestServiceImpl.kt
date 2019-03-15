@@ -1,4 +1,4 @@
-package com.acuerdo.channels.web.service
+package com.acuerdo.channels.web.security
 
 import com.acuerdo.channels.web.AuthenticationException
 import com.acuerdo.channels.web.Login
