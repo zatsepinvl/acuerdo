@@ -7,4 +7,4 @@ ARG ETH_NODE_URL=http://localhost:8545
 ARG ETH_NETWORK=testrpc
 COPY . .
 RUN touch truffle.env && echo 'ETH_NODE_URL='${ETH_NODE_URL} > truffle.env
-RUN truffle --network ${ETH_NETWORK} migrate
+RUN ./migrate.sh ${ETH_NETWORK}
