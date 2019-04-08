@@ -57,9 +57,10 @@ sourceSets.main.resources.srcDirs += "build/generated-resources"
 task generateContracts(type: Exec) {
     workingDir "$projectDir"
     commandLine "sh", "./web3/generate.sh",
+            "Channels.json",
+            "testrpc",
             "${buildDir}/generated-resources/contracts",
-            "${buildDir}/generated-sources",
-            "Channels.json"
+            "${buildDir}/generated-sources"
 }
 
 compileKotlin.dependsOn generateContracts

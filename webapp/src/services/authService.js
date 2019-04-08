@@ -1,8 +1,6 @@
 import web3Service from './web3Service';
 import httpClient from "../client/httpClient";
 
-const SIGNED_MESSAGE = 'Acuerdo';
-
 class authService {
 
     logout() {

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #script directory
-resourcesPath=${1:-${dir}/../build/generated-resources/contracts}
-sourcesPath=${2:-${dir}/../build/generated-sources}
-contracts=${3}
-network=${4:-testrpc}
+contracts=${1}
+network=${2:-testrpc}
+resourcesPath=${3:-${dir}/../build/generated-resources/contracts}
+sourcesPath=${4:-${dir}/../build/generated-sources}
 mkdir -p ${resourcesPath}
 for contract in ${contracts}
 do
