@@ -2,6 +2,7 @@ import React from 'react';
 import {observable, runInAction} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
+import moment from 'moment';
 
 import {withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -10,11 +11,11 @@ import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-
-import web3Service from "../../services/web3Service";
-import channelService from "../../services/channelService";
-import Loader from "../../common/Loader";
-import {currencyView} from "../../common/AmountView";
+import web3Service from '../../services/web3Service';
+import channelService from '../../services/channelService';
+import Loader from '../../common/Loader';
+import {currencyStr} from '../../common/AmountView';
+import {ethToWei, weiToEth} from "../../utils/ethUtils";
 
 
 const styles = theme => ({
@@ -42,11 +43,7 @@ const styles = theme => ({
 @observer
 class NewChannel extends React.Component {
 
-    @observable values = {
-        recipient: '',
-        amount: '',
-        timeout: ''
-    };
+    @observable values = {};
 
     componentDidMount() {
         this.props.newChannelStore.load();
@@ -60,6 +57,14 @@ class NewChannel extends React.Component {
         runInAction(() => this.values[name] = event.target.value);
     };
 
+    handleAddFee = () => {
+        const amount = this.values.amount || 0;
+        const {fee} = this.props.newChannelStore;
+        runInAction(() => {
+            this.values.amount = weiToEth(fee).plus(amount).toNumber();
+        })
+    };
+
     handleCreateClicked = () => {
         const {fee} = this.props.newChannelStore;
         const id = web3Service.web3.utils.sha3('' + new Date().getTime());
@@ -68,8 +73,8 @@ class NewChannel extends React.Component {
             channelId: id,
             sender: web3Service.account,
             recipient: this.values.recipient,
-            value: this.values.amount * 10 ** 18,
-            timeout: this.values.timeout * 86400, //day to seconds
+            value: ethToWei(this.values.amount),
+            dueDate: Math.floor(moment(this.values.dueDate).valueOf() / 1000),
             fee: fee
         };
         channelService.openChannel(channel)
@@ -86,40 +91,40 @@ class NewChannel extends React.Component {
         const {classes, newChannelStore} = this.props;
         const {fee} = newChannelStore;
         const defaultInputProps = {
-            margin: "normal",
+            margin: 'normal',
             className: classes.textField,
         };
         return (
             <form className={classes.container} onSubmit={this.handleSubmit}>
                 <Paper>
                     <Toolbar className={classes.toolbar}>
-                        <Typography variant="title" color="inherit">
+                        <Typography variant='title' color='inherit'>
                             New Channel
                         </Typography>
                     </Toolbar>
                     <div className={classes.inputContainer}>
                         <TextField
                             required
-                            id="channelName"
-                            label="Channel name"
+                            id='channelName'
+                            label='Channel name'
                             value={this.values.channelName}
                             onChange={this.handleChange('channelName')}
                             {...defaultInputProps}
                         />
                         <TextField
-                            id="sender"
+                            id='sender'
                             disabled
-                            label="Sender address"
+                            label='Sender address'
                             defaultValue={web3Service.account}
                             {...defaultInputProps}
                         />
                         <TextField
                             required
-                            id="recipient"
-                            label="Recipient address"
+                            id='recipient'
+                            label='Recipient address'
                             value={this.values.recipient}
                             onChange={this.handleChange('recipient')}
-                            placeholder="0x..."
+                            placeholder='0x...'
                             {...defaultInputProps}
                         />
                         <TextField
@@ -128,36 +133,40 @@ class NewChannel extends React.Component {
                             label="Amount ETH"
                             value={this.values.amount}
                             onChange={this.handleChange('amount')}
-                            placeholder="1.0"
+                            placeholder='1.0'
+                            helperText="Value of channel excluding service fee"
                             {...defaultInputProps}
                         />
                         <TextField
                             required
-                            id="timeout"
-                            label="Duration days"
-                            value={this.values.timeout}
-                            onChange={this.handleChange('timeout')}
-                            placeholder="2"
+                            id='dueDate'
+                            label='Due date'
+                            value={this.values.dueDate}
+                            onChange={this.handleChange('dueDate')}
+                            type='datetime-local'
+                            defaultValue={moment().format('YYYY-MM-DDThh:mm')}
+                            placeholder='2'
                             {...defaultInputProps}
-                            helperText="As this time pasted you can cancel channel and refund full amount"
+                            shrink
+                            helperText='As this time pasted you can cancel channel and refund full amount'
                         />
                         <TextField
                             id="fee"
                             disabled
                             label="Acuerdo Service Fee"
-                            defaultValue={currencyView(fee, 18) + ' ETH'}
+                            defaultValue={currencyStr(fee, 18) + ' ETH'}
                             {...defaultInputProps}
                             helperText="Fixed amount of fee need to pay on channel creation"
                         />
                     </div>
                     <Toolbar className={classes.toolbar}>
-                        <Button variant="contained" color="secondary"
+                        <Button variant='contained' color='secondary'
                                 className={classes.button}
-                                type="submit">
+                                type='submit'>
                             Create
                         </Button>
-                        <Link to="/">
-                            <Button variant="contained" color="primary"
+                        <Link to='/'>
+                            <Button variant='contained' color='primary'
                                     className={classes.button}>
                                 Cancel
                             </Button>
@@ -169,7 +178,7 @@ class NewChannel extends React.Component {
     }
 
     renderLoader() {
-        return <Loader caption="Preparing..."/>
+        return <Loader caption='Preparing...'/>
     }
 
     render() {

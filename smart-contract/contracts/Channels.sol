@@ -7,11 +7,11 @@ contract Channels {
         address payable sender;
         address payable recipient;
         uint256 value;
-        uint256 canCanceledAt;
+        uint256 dueDate;
     }
 
     /*--- Events ---*/
-    event ChannelOpened(bytes32 indexed channelId, address indexed sender, address indexed recipient, uint256 value, uint256 canCanceledAt, uint256 feePayed);
+    event ChannelOpened(bytes32 indexed channelId, address indexed sender, address indexed recipient, uint256 value, uint256 dueDate, uint256 feePayed);
     event ChannelClosed(bytes32 indexed channelId, uint256 refundToSender, uint256 releasedToRecipient);
     event ChannelCanceled(bytes32 channelId);
 
@@ -30,10 +30,9 @@ contract Channels {
         _;
     }
 
-    constructor() public {
+    constructor(uint256 _fee) public {
         owner = msg.sender;
-        fee = 1000000000000000;
-        //0.001 ETH
+        fee = _fee;
     }
 
     function setFee(uint256 _fee)
@@ -47,18 +46,18 @@ contract Channels {
         totalFee = 0;
     }
 
-    function open(bytes32 channelId, address payable recipient, uint256 timeout)
+    function open(bytes32 channelId, address payable recipient, uint256 dueDate)
     external payable {
         require(channels[channelId].sender == address(0), "Channel with the same channelId already exists.");
         Channel memory channel = Channel({
             sender : msg.sender,
             recipient : recipient,
             value : msg.value - fee,
-            canCanceledAt : now + timeout
+            dueDate : dueDate
         });
         channels[channelId] = channel;
         totalFee += fee;
-        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.canCanceledAt, fee);
+        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.dueDate, fee);
     }
 
     bytes prefix = "\x19Ethereum Signed Message:\n32";
@@ -94,7 +93,7 @@ contract Channels {
         Channel storage channel = channels[channelId];
         require(channel.sender != address(0));
         require(msg.sender == channel.sender);
-        require(now > channel.canCanceledAt);
+        require(now > channel.dueDate);
         channel.sender.transfer(channel.value);
         delete channels[channelId];
         emit ChannelCanceled(channelId);

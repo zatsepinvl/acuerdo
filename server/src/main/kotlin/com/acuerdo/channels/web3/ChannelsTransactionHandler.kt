@@ -42,7 +42,7 @@ class ChannelsTransactionHandler(
                 sender = event.sender,
                 recipient = event.recipient,
                 value = event.value,
-                canCanceledAfter = Instant.ofEpochSecond(event.canCanceledAt.longValueExact()),
+                dueDate = Instant.ofEpochSecond(event.dueDate.longValueExact()),
                 createdAt = timestamp,
                 status = ChannelStatus.OPENED,
                 submittedAt = existingChannel?.submittedAt ?: Instant.now(),

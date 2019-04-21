@@ -37,8 +37,8 @@ class channelService {
     }
 
     openChannel(channel) {
-        const {channelId, channelName, recipient, timeout, value, fee} = channel;
-        const args = [channelId, recipient, timeout];
+        const {channelId, channelName, recipient, dueDate, value, fee} = channel;
+        const args = [channelId, recipient, dueDate];
         const txArgs = {value: BigNumber(value).plus(fee)};
         const tx = this._channels.methods.open(...args);
         return contractService.sendTx(tx, txArgs)
@@ -47,7 +47,6 @@ class channelService {
                 const transaction = {
                     hash: transactionHash,
                     channelId: channelId,
-                    channelName: channelName,
                     from: channel.sender,
                     to: this._channels.options.address,
                     event: 'OPEN_CHANNEL'

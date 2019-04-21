@@ -29,7 +29,7 @@ class ChannelDetails extends React.Component {
     render() {
         const {classes, channelStore} = this.props;
         const {channel, isSender, isRecipient} = channelStore;
-        const {channelName, channelId, sender, recipient, value, canCanceledAfter, createdAt, status} = channel;
+        const {channelName, channelId, sender, recipient, value, dueDate, createdAt, status} = channel;
         return (
             <Paper>
                 <Toolbar>
@@ -75,9 +75,9 @@ class ChannelDetails extends React.Component {
                         </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText secondary="Can canceled after"/>
+                        <ListItemText secondary="Due date"/>
                         <Typography variant="subheading">
-                            <TimeView time={canCanceledAfter}/>
+                            <TimeView time={dueDate}/>
                         </Typography>
                     </ListItem>
                     <ListItem>

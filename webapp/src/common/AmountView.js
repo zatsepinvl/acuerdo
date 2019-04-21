@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {BigNumber} from 'bignumber.js';
 
-export const currencyView = (currency, decimals) => {
+export const currencyStr = (currency, decimals) => {
     if (!currency) {
         return '0.0'
     }
@@ -19,7 +19,7 @@ class AmountView extends React.PureComponent {
     render() {
         const {className, value, currency, decimals} = this.props;
         return (
-            <span className={className}>{currencyView(value, decimals)} {currency}</span>
+            <span className={className}>{currencyStr(value, decimals)} {currency}</span>
         );
     }
 }

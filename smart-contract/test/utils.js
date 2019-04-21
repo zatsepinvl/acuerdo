@@ -1,6 +1,6 @@
 module.exports = {
     sleepUntil: (to) => {
-        console.log("Sleeping for " + (to - new Date().getTime() / 1000));
+        console.log("Sleeping for " + (to - new Date().getTime() / 1000) + " seconds");
         const waitTill = to * 1000;
         while (waitTill > new Date()) {
         }
@@ -27,5 +27,9 @@ module.exports = {
         let error;
         await promise.catch(err => error = err);
         expect(error.message).to.contains(message);
+    },
+
+    nowSeconds: () => {
+        return Math.floor(Date.now() / 1000);
     }
 };
