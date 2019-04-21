@@ -13,7 +13,6 @@ contract Channels {
     /*--- Events ---*/
     event ChannelOpened(bytes32 indexed channelId, address indexed sender, address indexed recipient, uint256 value, uint256 canCanceledAt, uint256 feePayed);
     event ChannelClosed(bytes32 indexed channelId, uint256 refundToSender, uint256 releasedToRecipient);
-    event ChannelClosedByDispute(bytes32 channelId);
     event ChannelCanceled(bytes32 channelId);
 
 
@@ -22,8 +21,8 @@ contract Channels {
     uint256 public fee;
     uint256 public totalFee;
 
-    mapping(bytes32 => Channel) channels;
-    mapping(bytes32 => address) signatures;
+    mapping(bytes32 => Channel) public channels;
+    mapping(bytes32 => address) public signatures;
 
     /*--- Modifiers ---*/
     modifier onlyOwner() {

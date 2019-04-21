@@ -8,5 +8,8 @@
   },
   "scripts": {
     "migrate": "sh migrate.sh"
+  },
+  "devDependencies": {
+    "bignumber.js": "^8.1.1"
   }
 }

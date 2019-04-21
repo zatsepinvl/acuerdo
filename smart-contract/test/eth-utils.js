@@ -1,4 +1,5 @@
 const promiseTimeout = require("./utils.js").promiseTimeout;
+const BigNumber = require('bignumber.js');
 
 const defaultGasPrice = 10 * 10 ** 9; //10 GWEI
 
@@ -45,14 +46,13 @@ const splitSignature = (signature) => {
         s: '0x' + signature.slice(64, 128),
         v: web3.utils.toDecimal('0x' + signature.slice(128, 130)) + 27
     }
-}
+};
 
 module.exports = {
     defaultGasPrice: defaultGasPrice,
     logTx: logTx,
     tx: tx,
     watchEvent: watchEvent,
-    rawBalance: async (address) => await web3.eth.getBalance(address),
-    tokenRawBalance: async (address, token) => await token.balanceOf(address),
+    ethBalance: async (address) => new BigNumber(await web3.eth.getBalance(address)),
     splitSignature: splitSignature
 };

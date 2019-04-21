@@ -1,38 +1,63 @@
-const {tx, splitSignature} = require('./eth-utils');
-const Channels = artifacts.require('Channels');
-const channels = new web3.eth.Contract(Channels.abi, Channels.address, {gas: 4700000});
+const BigNumber = require('bignumber.js');
+
+const channels = require('./channels.js');
+const {ethBalance} = require('./eth-utils.js');
+const {assertBigNumbers} = require('./assert-utils.js');
+
 
 contract('Channels', (accounts) => {
+    const fee = new BigNumber(10 ** 10);
+    const channelAmount = new BigNumber(10 ** 18);
     const channel = {
-        channelId: web3.utils.randomHex(32),
-        sender: accounts[0],
-        recepient: accounts[1],
-        value: 10 ** 18,
-        timeout: 100
+        channelId: web3.utils.randomHex(32), sender: accounts[0],
+        recipient: accounts[1], value: channelAmount.plus(fee), timeout: 100
     };
+
     describe('Main Payment Channel Flow', () => {
+        it('setFee', async () => {
+            await channels.setFee(fee.toFixed(), accounts[0]); //accounts[0] - default owner
+            const actualFee = await channels.getFee();
+            assert.equal(actualFee, fee, "Fee must be changed");
+        });
+
         it('Open channel', async () => {
-            const {channelId, sender, recepient, timeout, value} = channel;
-            const openTxResult = await tx(channels, 'open', [channelId, recepient, timeout], {
-                from: sender,
-                value: value + 1000000000000000
-            }, ['ChannelOpened']);
-            console.log(openTxResult.events.ChannelOpened);
-            assert.equal(openTxResult.events.ChannelOpened.channelId, channelId, 'Channed Id from event doesnt match');
+            const senderBalance = await ethBalance(channel.sender);
+            const tx = await channels.openChannel(channel);
+            const actualSenderBalance = await ethBalance(channel.sender);
 
-
-            const closeValue = value / 2;
-            const proof = await channels.methods.getPaymentId(channelId, closeValue).call();
-
-            const signature = await web3.eth.sign(proof, sender);
-            const senderSign = splitSignature(signature);
-            const recipientCloseTxResult = await tx(
-                channels, 'close',
-                [proof, senderSign.v, senderSign.r, senderSign.s, channelId, closeValue],
-                {from: recepient},
-                ['ChannelClosed']
+            console.log(senderBalance);
+            assert.equal(
+                tx.events.ChannelOpened.channelId, channel.channelId,
+                'ChannelId from event doesnt match'
             );
-            console.log(recipientCloseTxResult.events.ChannelClosed);
-        })
-    })
+            assertBigNumbers(
+                actualSenderBalance, senderBalance.minus(channel.value).minus(tx.ethUsed),
+                'Sender balance must be changed by channel value and tx eth used'
+            );
+        });
+
+        it('Close channel', async () => {
+            const closeValue = channelAmount.dividedToIntegerBy(2);
+
+            const senderBalance = await ethBalance(channel.sender);
+            const recipientBalance = await ethBalance(channel.recipient);
+            const tx = await channels.closeChannelByRecipient(channel, closeValue.toFixed());
+            const actualSenderBalance = await ethBalance(channel.sender);
+            const actualRecipientBalance = await ethBalance(channel.recipient);
+
+            assert.equal(
+                tx.events.ChannelClosed.channelId, channel.channelId,
+                'ChannelId from event doesnt match'
+            );
+            assertBigNumbers(
+                actualSenderBalance, senderBalance.plus(closeValue),
+                'Sender balance must be changed by channel close value'
+            );
+            assertBigNumbers(
+                actualRecipientBalance, recipientBalance.plus(closeValue).minus(tx.ethUsed),
+                'Sender balance must be changed by channel close value minus tx eth used'
+            )
+
+        });
+    });
 });
