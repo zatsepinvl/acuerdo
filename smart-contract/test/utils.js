@@ -23,12 +23,6 @@ module.exports = {
         ]);
     },
 
-    expectError: async (promise, message) => {
-        let error;
-        await promise.catch(err => error = err);
-        expect(error.message).to.contains(message);
-    },
-
     nowSeconds: () => {
         return Math.floor(Date.now() / 1000);
     }
