@@ -15,18 +15,18 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-        private val requestManger: AuthRequestService,
+        private val authWebService: AuthWebService,
         private val jwtTokenService: JwtTokenService
 ) {
 
     @GetMapping("/login")
     fun loginRequest(): LoginRequest {
-        return requestManger.requestLogin()
+        return authWebService.requestLogin()
     }
 
     @PostMapping("/login")
     fun login(@Valid @RequestBody login: Login, response: HttpServletResponse) {
-        requestManger.login(login)
+        authWebService.verifyLogin(login)
         addJwtToCookie(response, login.account)
     }
 

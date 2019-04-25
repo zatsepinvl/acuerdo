@@ -1,10 +1,12 @@
 package com.acuerdo.channels.core.service
 
 import com.acuerdo.channels.core.InvalidSignerException
+import com.acuerdo.channels.core.PaymentSignature
 import com.acuerdo.channels.core.model.ChannelRepository
 import com.acuerdo.channels.core.model.Payment
 import com.acuerdo.channels.core.model.PaymentRepository
 import com.acuerdo.channels.core.model.getById
+import com.acuerdo.common.service.ResourceNotFoundException
 import com.acuerdo.web3.contract.Channels
 import com.acuerdo.web3.core.EthSignatureService
 import org.springframework.stereotype.Service
@@ -12,8 +14,7 @@ import org.web3j.utils.Numeric
 
 interface PaymentService {
     fun savePayment(payment: Payment): Payment
-
-    fun addRecipientSignature(payment: Payment, signature: String)
+    fun signPaymentByRecipient(paymentId: String, paymentSignature: PaymentSignature)
 }
 
 @Service
@@ -40,7 +41,13 @@ class PaymentServiceImpl(
         return paymentRepository.save(payment)
     }
 
-    override fun addRecipientSignature(payment: Payment, signature: String) {
+    override fun signPaymentByRecipient(paymentId: String, paymentSignature: PaymentSignature) {
+        val payment = paymentRepository.findById(paymentId)
+                .orElse(null) ?: throw ResourceNotFoundException("Unable to find payment with paymentId $paymentId")
+        addRecipientSignature(payment, paymentSignature.signature)
+    }
+
+    private fun addRecipientSignature(payment: Payment, signature: String) {
         val signer = ethSignatureService.getHashSigner(payment.paymentId, signature)
         val channel = channelRepository.getById(payment.channelId)
         if (!signer.equals(channel.recipient, true)) {

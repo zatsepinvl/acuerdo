@@ -1,14 +1,14 @@
 package com.acuerdo.channels.web.controller
 
-import com.acuerdo.channels.core.model.*
+import com.acuerdo.channels.core.ChannelData
+import com.acuerdo.channels.core.ChannelSaveData
+import com.acuerdo.channels.core.PaymentSignature
+import com.acuerdo.channels.core.model.Channel
+import com.acuerdo.channels.core.model.ChannelRepository
+import com.acuerdo.channels.core.model.Payment
+import com.acuerdo.channels.core.model.Transaction
+import com.acuerdo.channels.core.service.ChannelService
 import com.acuerdo.channels.core.service.PaymentService
-import com.acuerdo.channels.web.ChannelResponse
-import com.acuerdo.channels.web.ChannelSaveRequest
-import com.acuerdo.channels.web.PaymentSignature
-import com.acuerdo.channels.web.service.ChannelWebService
-import com.acuerdo.common.web.BadRequestException
-import com.acuerdo.common.web.ConflictException
-import com.acuerdo.common.web.NotFoundException
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.by
 import org.springframework.http.HttpStatus
@@ -18,15 +18,13 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/channels")
 class ChannelController(
         val channelRepository: ChannelRepository,
-        val paymentRepository: PaymentRepository,
-        val transactionRepository: TransactionRepository,
-        val paymentService: PaymentService,
-        val channelWebService: ChannelWebService
+        val channelService: ChannelService,
+        val paymentService: PaymentService
 ) {
 
     @GetMapping("/{channelId}")
-    fun getChannel(@PathVariable channelId: String): ChannelResponse {
-        return channelWebService.getChannelById(channelId)
+    fun getChannel(@PathVariable channelId: String): ChannelData {
+        return channelService.getChannelDataById(channelId)
     }
 
     @GetMapping("/users/{username}")
@@ -37,28 +35,20 @@ class ChannelController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun saveChannel(@RequestBody request: ChannelSaveRequest) {
-        val channelId = request.channel.channelId
-        if (channelRepository.existsById(channelId)) {
-            throw ConflictException("Channel with id $channelId exists ")
-        }
-        channelRepository.save(request.channel)
-        transactionRepository.save(request.transaction)
+    fun saveChannel(@RequestBody request: ChannelSaveData) {
+        val (channel, transaction) = request
+        channelService.saveChannel(channel, transaction)
     }
 
     @PutMapping("/{channelId}")
     fun closeChannel(@PathVariable channelId: String, @RequestBody transaction: Transaction) {
-        checkChannelExists(channelId)
-        if (transaction.event != TransactionEvent.CLOSE_CHANNEL) {
-            throw BadRequestException("Transaction event must be ${TransactionEvent.CLOSE_CHANNEL}")
-        }
-        transactionRepository.save(transaction)
+        channelService.closeChannel(channelId, transaction)
     }
 
     @PostMapping("/{channelId}/payments")
     @ResponseStatus(HttpStatus.CREATED)
     fun savePayment(@PathVariable channelId: String, @RequestBody payment: Payment): Payment {
-        checkChannelExists(channelId)
+        channelService.checkChannelExists(channelId)
         return paymentService.savePayment(payment)
     }
 
@@ -68,21 +58,7 @@ class ChannelController(
             @PathVariable paymentId: String,
             @RequestBody paymentSignature: PaymentSignature
     ) {
-        checkChannelExists(channelId)
-        val payment = paymentRepository.findById(paymentId)
-                .orElse(null) ?: throw NotFoundException("Unable to find payment with paymentId $paymentId")
-        paymentService.addRecipientSignature(payment, paymentSignature.signature)
-    }
-
-    private fun checkChannelExists(channelId: String) {
-        if (!channelRepository.existsById(channelId)) {
-            throw BadRequestException("Channel with paymentId $channelId doesn't exist")
-        }
-    }
-
-    private fun checkPaymentExists(channelId: String) {
-        if (!channelRepository.existsById(channelId)) {
-            throw BadRequestException("Channel with paymentId $channelId doesn't exist")
-        }
+        channelService.checkChannelExists(channelId)
+        paymentService.signPaymentByRecipient(paymentId, paymentSignature)
     }
 }

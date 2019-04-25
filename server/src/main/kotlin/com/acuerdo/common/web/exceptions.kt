@@ -4,10 +4,22 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class NotFoundException(message: String) : RuntimeException(message)
+class NotFoundWebException : RuntimeException {
+    constructor(message: String?) : super(message)
+    constructor(cause: Throwable?) : super(cause)
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
+}
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-class BadRequestException(message: String) : RuntimeException(message)
+class BadRequestWebException : RuntimeException {
+    constructor(message: String?) : super(message)
+    constructor(cause: Throwable?) : super(cause)
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
+}
 
 @ResponseStatus(HttpStatus.CONFLICT)
-class ConflictException(message: String) : RuntimeException(message)
+class ConflictWebException : RuntimeException {
+    constructor(message: String?) : super(message)
+    constructor(cause: Throwable?) : super(cause)
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
+}

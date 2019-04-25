@@ -1,6 +1,6 @@
 package com.acuerdo.web3.web
 
-import com.acuerdo.common.web.NotFoundException
+import com.acuerdo.common.web.NotFoundWebException
 import com.acuerdo.web3.contract.Channels
 import com.acuerdo.web3.core.Web3Settings
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -40,7 +40,7 @@ class Web3Controller(
         val contractPath = "classpath:contracts/$contractName.json"
         val contractResource = resourceLoader.getResource(contractPath)
         if (!contractResource.exists()) {
-            throw NotFoundException("Unable to find contract JSON by name: $contractName")
+            throw NotFoundWebException("Unable to find contract JSON by name: $contractName")
         }
         val contractJson = ObjectMapper().readValue(contractResource.inputStream, Map::class.java)
         val abi = contractJson["abi"]

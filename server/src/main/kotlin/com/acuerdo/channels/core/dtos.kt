@@ -1,4 +1,4 @@
-package com.acuerdo.channels.web
+package com.acuerdo.channels.core
 
 import com.acuerdo.channels.core.model.Channel
 import com.acuerdo.channels.core.model.Payment
@@ -6,13 +6,8 @@ import com.acuerdo.channels.core.model.Transaction
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.math.BigInteger
 
-data class ChannelSaveRequest(
+data class ChannelSaveData(
         val channel: Channel,
-        val transaction: Transaction
-)
-
-data class ChannelCloseRequest(
-        val channelId: String,
         val transaction: Transaction
 )
 
@@ -21,7 +16,7 @@ data class ChannelPaymentStatus(
         var releaseToRecipient: BigInteger
 )
 
-data class ChannelResponse(
+data class ChannelData(
         @JsonUnwrapped val channel: Channel,
         val payments: List<Payment>,
         val transactions: List<Transaction>,
