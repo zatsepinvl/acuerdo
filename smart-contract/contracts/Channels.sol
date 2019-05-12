@@ -22,7 +22,6 @@ contract Channels {
     uint256 public totalFee;
 
     mapping(bytes32 => Channel) public channels;
-    mapping(bytes32 => address) public signatures;
 
     /*--- Modifiers ---*/
     modifier onlyOwner() {
