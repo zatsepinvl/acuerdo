@@ -41,7 +41,6 @@ dependencies {
     compile "org.web3j:core:3.6.0"
     compile "io.springfox:springfox-swagger2:2.9.2"
     testCompile "junit:junit"
-    integrationTestCompile "org.testcontainers:testcontainers:1.11.2"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
@@ -54,22 +53,6 @@ compileTestKotlin {
 
 sourceSets.main.java.srcDirs += "build/generated-sources"
 sourceSets.main.resources.srcDirs += "build/generated-resources"
-
-sourceSets {
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration-test/kotlin')
-        }
-        resources.srcDir file('src/integration-test/resources')
-    }
-}
-
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
-}
 
 task generateContracts(type: Exec) {
     workingDir "$projectDir"
