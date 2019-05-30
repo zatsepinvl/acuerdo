@@ -1,6 +1,12 @@
 pragma solidity ^0.5.0;
 
-contract Channels {
+import "./Owanble.sol";
+import "./EternalStorage.sol";
+import "./ChannelsRepository.sol";
+
+contract Channels is Ownable {
+
+    using ChannelsRepository for address;
 
     /*--- Structures ---*/
     struct Channel {
@@ -15,60 +21,47 @@ contract Channels {
     event ChannelClosed(bytes32 indexed channelId, uint256 refundToSender, uint256 releasedToRecipient);
     event ChannelCanceled(bytes32 channelId);
 
-
     /*--- Store ---*/
-    address public owner;
     uint256 public fee;
     uint256 public totalFee;
+    address public channels;
 
-    mapping(bytes32 => Channel) public channels;
-
-    /*--- Modifiers ---*/
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
+    constructor(uint256 _fee, address eternalStorage) public {
+        fee = _fee;
+        channels = eternalStorage;
     }
 
-    constructor(uint256 _fee) public {
-        owner = msg.sender;
+    function setFee(uint256 _fee) external onlyOwner {
         fee = _fee;
     }
 
-    function setFee(uint256 _fee)
-    external onlyOwner {
-        fee = _fee;
-    }
-
-    function withdrawTotalFee(address payable to)
-    external onlyOwner {
+    function withdrawTotalFee(address payable to) external onlyOwner {
         to.transfer(totalFee);
         totalFee = 0;
     }
 
     function open(bytes32 channelId, address payable recipient, uint256 dueDate)
     external payable {
-        require(channels[channelId].sender == address(0), "Channel with the same channelId already exists.");
-        Channel memory channel = Channel({
-            sender : msg.sender,
-            recipient : recipient,
-            value : msg.value - fee,
-            dueDate : dueDate
-        });
-        channels[channelId] = channel;
+        require(channels.getSender(channelId) == address(0), "Channel with the same channelId already exists.");
+        uint256 value = msg.value - fee;
+        channels.saveChannel(channelId, msg.sender, recipient, value, dueDate);
         totalFee += fee;
-        emit ChannelOpened(channelId, channel.sender, channel.recipient, channel.value, channel.dueDate, fee);
+        emit ChannelOpened(channelId, msg.sender, recipient, value, dueDate, fee);
     }
 
     bytes prefix = "\x19Ethereum Signed Message:\n32";
 
     function close(bytes32 h, uint8 v, bytes32 r, bytes32 s, bytes32 channelId, uint256 value)
     public {
-        Channel storage channel = channels[channelId];
-        require(channel.sender != address(0));
-        require(msg.sender == channel.sender || msg.sender == channel.recipient);
-        address signer = channel.sender == msg.sender ? channel.recipient : channel.sender;
+        address payable channelSender = address(uint160(channels.getSender(channelId)));
+        address payable channelRecipient = address(uint160(channels.getRecipient(channelId)));
+        
+        require(channelSender != address(0));
+        require(msg.sender == channelSender || msg.sender == channelRecipient);
 
-        uint256 channelValue = channel.value;
+        address signer = channelSender == msg.sender ? channelRecipient : channelSender;
+
+        uint256 channelValue = channels.getValue(channelId);
         require(value <= channelValue);
 
         bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, h));
@@ -78,23 +71,25 @@ contract Channels {
         bytes32 proof = getPaymentId(channelId, value);
         require(proof == h, "Signature is valid but doesn't match the data provided");
 
+        channelRecipient.transfer(value);
         uint256 toSender = channelValue - value;
-        channel.recipient.transfer(value);
         if (toSender > 0) {
-            channel.sender.transfer(toSender);
+            channelSender.transfer(toSender);
         }
-        delete channels[channelId];
+        channels.deleteChannel(channelId);
         emit ChannelClosed(channelId, toSender, value);
     }
 
     function cancel(bytes32 channelId)
     external {
-        Channel storage channel = channels[channelId];
-        require(channel.sender != address(0));
-        require(msg.sender == channel.sender);
-        require(now > channel.dueDate);
-        channel.sender.transfer(channel.value);
-        delete channels[channelId];
+        address payable channelSender = address(uint160(channels.getSender(channelId)));
+
+        require(channelSender != address(0));
+        require(msg.sender == channelSender);
+        require(now > channels.getDueDate(channelId));
+
+        channelSender.transfer(channels.getValue(channelId));
+        channels.deleteChannel(channelId);
         emit ChannelCanceled(channelId);
     }
 

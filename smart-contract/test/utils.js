@@ -6,7 +6,7 @@ module.exports = {
         }
     },
 
-    promiseTimeout: (promise, ms = 1000) => {
+    promiseTimeout: (promise, ms = 5000) => {
 
         // Create a promise that rejects in <ms> milliseconds
         let timeout = new Promise((resolve, reject) => {

@@ -1,6 +1,7 @@
 const BigNumber = require('bignumber.js');
 const channels = require('./channels');
-const {sleepUntil, expectError, nowSeconds} = require('./utils');
+const {sleepUntil, nowSeconds} = require('./utils');
+const {expectError} = require('./assert-utils');
 const {ethBalance} = require('./eth-utils');
 const {assertBigNumbers} = require('./assert-utils');
 
