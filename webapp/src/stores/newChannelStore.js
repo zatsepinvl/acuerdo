@@ -1,5 +1,5 @@
 import {action, flow, observable} from 'mobx';
-import {channelService} from '../services';
+import {channelContractService} from '../services';
 
 class newChannelStore {
     @observable fee;
@@ -12,7 +12,7 @@ class newChannelStore {
     }
 
     load = flow(function* () {
-        this.fee = yield channelService.getFee();
+        this.fee = yield channelContractService.getFee();
         this.ready = true;
     }).bind(this);
 

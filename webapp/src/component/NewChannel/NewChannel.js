@@ -13,9 +13,9 @@ import Typography from '@material-ui/core/Typography';
 
 import web3Service from '../../services/web3Service';
 import channelService from '../../services/channelService';
-import Loader from '../../common/Loader';
-import {currencyStr} from '../../common/AmountView';
-import {ethToWei, weiToEth} from "../../utils/ethUtils";
+import Loader from '../../view/Loader';
+import {currencyStr} from '../../view/AmountView';
+import {ethToWei} from "../../utils/ethUtils";
 
 
 const styles = theme => ({
@@ -55,14 +55,6 @@ class NewChannel extends React.Component {
 
     handleChange = name => event => {
         runInAction(() => this.values[name] = event.target.value);
-    };
-
-    handleAddFee = () => {
-        const amount = this.values.amount || 0;
-        const {fee} = this.props.newChannelStore;
-        runInAction(() => {
-            this.values.amount = weiToEth(fee).plus(amount).toNumber();
-        })
     };
 
     handleCreateClicked = () => {

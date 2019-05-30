@@ -9,9 +9,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import HashView from "../../common/HashView";
-import TimeView from "../../common/TimeView";
-import A from "../../common/A";
+import HashView from "../../view/HashView";
+import TimeView from "../../view/TimeView";
+import Hyperlink from "../../view/Hyperlink";
 
 const txEventMapping = {
     'OPEN_CHANNEL': 'Open channel',
@@ -31,7 +31,7 @@ class ChannelTransactions extends React.PureComponent {
                 {transactions.map(tx => {
                     const {hash, event, confirmedAt} = tx;
                     return (
-                        <A href={`https://ropsten.etherscan.io/tx/${hash}`} key={hash}>
+                        <Hyperlink href={`https://ropsten.etherscan.io/tx/${hash}`} key={hash}>
                             <ListItem button>
                                 <ListItemText primary={txEventMapping[event] || 'Unknown tx'}
                                               secondary={<span>
@@ -43,7 +43,7 @@ class ChannelTransactions extends React.PureComponent {
                                 </Typography>
 
                             </ListItem>
-                        </A>
+                        </Hyperlink>
                     )
                 })}
             </List>
@@ -55,7 +55,7 @@ class ChannelTransactions extends React.PureComponent {
             <Paper>
                 <Toolbar>
                     <Typography variant="title">
-                        Transaction History
+                        Transaction history
                     </Typography>
                 </Toolbar>
                 {this.renderTransactions()}

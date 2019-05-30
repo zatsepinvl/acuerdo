@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {inject, observer} from "mobx-react";
-import Loader from "./common/Loader";
+import Loader from "./view/Loader";
 import web3Service from './services/web3Service';
 import logoImage from "./images/logo.svg";
 import NoMetaMask from './component/Entrance/NoMetaMask';
@@ -45,24 +45,28 @@ const styles = theme => ({
 @observer
 class App extends Component {
 
-    renderApp = () => {
+    getLoginStep() {
         const {loggedIn} = this.props.appStore;
         const {web3, account} = web3Service;
-        let IntoStep;
         if (!web3) {
-            IntoStep = <NoMetaMask/>;
+            return <NoMetaMask/>;
         }
         else if (!account) {
-            IntoStep = <MetaMaskLogin/>;
+            return <MetaMaskLogin/>;
         }
         else if (!loggedIn) {
-            IntoStep = <Login/>;
+            return <Login/>;
         }
-        if (IntoStep) {
+        else return null;
+    };
+
+    renderApp = () => {
+        const LoginStep = this.getLoginStep();
+        if (LoginStep) {
             return (
                 <div className="into-step-container">
                     <img src={logoImage} alt="" width="128" height="30" className="logo"/>
-                    {IntoStep}
+                    {LoginStep}
                 </div>
             );
         }

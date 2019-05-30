@@ -8,16 +8,16 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import AmountView from "../../common/AmountView";
+import AmountView from "../../view/AmountView";
 
 const styles = (theme) => ({});
 
 @inject('channelStore')
 @observer
-class ChannelPaymentStatus extends React.Component {
+class ChannelPaymentsStatus extends React.Component {
 
     render() {
-        const {classes, channelStore} = this.props;
+        const {channelStore} = this.props;
         const {paymentStatus, isSender, isRecipient} = channelStore;
         const {refundToSender, releaseToRecipient} = paymentStatus;
         return (
@@ -25,7 +25,7 @@ class ChannelPaymentStatus extends React.Component {
                 <Paper>
                     <Toolbar>
                         <Typography variant="title">
-                            Payment Status
+                            Payments status
                         </Typography>
                     </Toolbar>
                     <List>
@@ -48,4 +48,4 @@ class ChannelPaymentStatus extends React.Component {
     }
 }
 
-export default withStyles(styles)(ChannelPaymentStatus);
+export default withStyles(styles)(ChannelPaymentsStatus);

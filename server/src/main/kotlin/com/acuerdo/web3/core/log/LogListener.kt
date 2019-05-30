@@ -25,10 +25,10 @@ class LogListener(
         val netId = web3Settings.netId
         val currentBlock = web3j.ethBlockNumber().send().blockNumber
         val listenerData = listenerDataRepository.findById(netId)
-                .orElseGet({
+                .orElseGet {
                     val data = ListenerData(netId, currentBlock)
                     listenerDataRepository.save(data)
-                })
+                }
         val lastBlock = listenerData.lastBlock
         if (lastBlock <= currentBlock) {
             val fromBlock = DefaultBlockParameter.valueOf(lastBlock)

@@ -4,11 +4,11 @@ import {inject, observer} from "mobx-react";
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-import Loader from "../../common/Loader";
+import Loader from "../../view/Loader";
 import ChannelDetails from "./ChannelDetails";
 import ChannelPayments from "./ChannelPayments";
 import ChannelTransactions from "./ChannelTransactions";
-import ChannelPaymentStatus from "./ChannelPaymentStatus";
+import ChannelPaymentsStatus from "./ChannelPaymentsStatus";
 
 const styles = {
     paymentsTitle: {
@@ -31,11 +31,7 @@ class Channel extends React.Component {
         this.props.channelStore.reset();
     }
 
-    render() {
-        const {loaded} = this.props.channelStore;
-        if (!loaded) {
-            return <Loader caption="Loading channel..."/>;
-        }
+    renderChannel() {
         return (
             <React.Fragment>
                 <Grid container spacing={16}>
@@ -44,7 +40,7 @@ class Channel extends React.Component {
                     </Grid>
                     <Grid item xs={4} container direction="column" spacing={16}>
                         <Grid item>
-                            <ChannelPaymentStatus/>
+                            <ChannelPaymentsStatus/>
                         </Grid>
                         <Grid item>
                             <ChannelPayments/>
@@ -54,9 +50,16 @@ class Channel extends React.Component {
                         <ChannelTransactions/>
                     </Grid>
                 </Grid>
-
             </React.Fragment>
         )
+    }
+
+    render() {
+        const {loaded} = this.props.channelStore;
+        if (!loaded) {
+            return <Loader caption="Loading channel..."/>;
+        }
+        return this.renderChannel();
     }
 }
 

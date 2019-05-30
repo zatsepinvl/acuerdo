@@ -4,7 +4,6 @@ import moment from 'moment';
 import channelService from "../services/channelService";
 import paymentsService from "../services/paymentsService";
 import web3Service from "../services/web3Service";
-import httpClient from "../client/httpClient";
 import {OPENED} from "../consts/channelsSatutes";
 import channelEventService from "../services/channelEventService";
 
@@ -87,24 +86,14 @@ class channelsStore {
     }).bind(this);
 
     closeChannel = flow(function* (payment) {
-        console.log(payment);
         const channelId = this.channel.channelId;
-        const txHash = yield channelService.closeChannel({
+        const {transaction} = yield channelService.closeChannel({
             channelId: channelId,
             paymentId: payment.paymentId,
             value: payment.value,
             signature: this.isRecipient ? payment.senderSignature : payment.recipientSignature
         });
-        const transaction = {
-            hash: txHash,
-            channelId: channelId,
-            from: this.channel.sender,
-            to: channelService.address,
-            event: 'CLOSE_CHANNEL'
-        };
-        const sendResult = yield httpClient.channels.close({channelId, transaction});
         this.channel.transactions.push(transaction);
-        return sendResult;
     }).bind(this);
 }
 

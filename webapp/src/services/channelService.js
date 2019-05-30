@@ -1,13 +1,9 @@
-import BigNumber from "bignumber.js";
-
 import web3Service from "./web3Service";
-import contractService from "./contractService";
 import httpClient from "../client/httpClient";
+import channelContractService from "./channelContractService";
 
 class channelService {
     whenLoad;
-    address;
-    _channels;
 
     constructor() {
         this.whenLoad = this._load();
@@ -15,56 +11,48 @@ class channelService {
 
     async _load() {
         await web3Service.whenLoad;
-        if (!web3Service.isConnected) {
-            return;
-        }
-        const contract = await httpClient.channels.contract();
-        this._channels = contractService.loadContract(contract);
-        this.address = this._channels.options.address.toLowerCase();
     }
 
     getChannels() {
-        const username = web3Service.account;
-        return httpClient.channels.getAllByUser(username)
+        return httpClient.channels.getAllByUser(web3Service.account)
     }
 
     getChannelById(channelId) {
         return httpClient.channels.getById(channelId);
     }
 
-    getContract() {
-        return this._channels;
+    async openChannel(channel) {
+        const {channelId, sender} = channel;
+        const txHash = await channelContractService.openChannelTx(channel);
+        channel.status = 'PENDING';
+        const transaction = {
+            hash: txHash,
+            channelId: channelId,
+            from: sender,
+            to: channelContractService.address,
+            event: 'OPEN_CHANNEL'
+        };
+        const sendResult = await httpClient.channels.save({channel, transaction});
+        return {transaction, sendResult};
     }
 
-    openChannel(channel) {
-        const {channelId, channelName, recipient, dueDate, value, fee} = channel;
-        const args = [channelId, recipient, dueDate];
-        const txArgs = {value: BigNumber(value).plus(fee)};
-        const tx = this._channels.methods.open(...args);
-        return contractService.sendTx(tx, txArgs)
-            .then(transactionHash => {
-                channel.status = 'PENDING';
-                const transaction = {
-                    hash: transactionHash,
-                    channelId: channelId,
-                    from: channel.sender,
-                    to: this._channels.options.address,
-                    event: 'OPEN_CHANNEL'
-                };
-                return httpClient.channels.save({channel, transaction});
-            })
+    /**
+     * request {channelId, paymentId, value, signature}
+     */
+    async closeChannel(request) {
+        const txHash = await channelContractService.closeChannelTx(request);
+        const {channelId} = request;
+        const transaction = {
+            hash: txHash,
+            channelId: channelId,
+            from: web3Service.account,
+            to: channelService.address,
+            event: 'CLOSE_CHANNEL'
+        };
+        const sendResult = await httpClient.channels.close({channelId, transaction});
+        return {sendResult, transaction};
     }
 
-    closeChannel({channelId, paymentId, value, signature}) {
-        const vrs = web3Service.splitSignature(signature);
-        const args = [paymentId, vrs.v, vrs.r, vrs.s, channelId, '' + value];
-        const tx = this._channels.methods.close(...args);
-        return contractService.sendTx(tx);
-    }
-
-    getFee() {
-        return this._channels.methods.fee().call();
-    }
 }
 
 export default new channelService();

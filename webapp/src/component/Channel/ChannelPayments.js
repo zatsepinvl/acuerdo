@@ -13,8 +13,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
-import AmountView from "../../common/AmountView";
-import TimeView from "../../common/TimeView";
+import AmountView from "../../view/AmountView";
+import TimeView from "../../view/TimeView";
 import PayoutDialog from "./PayoutDialog";
 import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
@@ -157,13 +157,6 @@ class ChannelPayments extends React.Component {
                         <Typography variant="title" className={classes.paymentsTitle}>
                             Payments
                         </Typography>
-                        {/*{!!payments.length && (
-                            <Tooltip title="Download payments JSON">
-                                <IconButton color="primary">
-                                    <CloudDownload onClick={this.download}/>
-                                </IconButton>
-                            </Tooltip>
-                        )}*/}
                         {isSender && isActive && (
                             <Button variant="contained"
                                     color="secondary"

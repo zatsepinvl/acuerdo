@@ -35,6 +35,6 @@ interface ChannelRepository : MongoRepository<Channel, String> {
 
 fun ChannelRepository.getById(channelId: String): Channel {
     return this.findById(channelId).orElse(null)
-            ?: throw IllegalArgumentException("Unable to find channel by paymentId $channelId")
+            ?: throw IllegalArgumentException("Unable to find channel by id $channelId")
 }
 

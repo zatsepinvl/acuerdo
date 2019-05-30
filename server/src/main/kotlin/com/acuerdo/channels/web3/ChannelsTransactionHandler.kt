@@ -14,6 +14,7 @@ import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Numeric
 import java.time.Instant
+import java.util.logging.Logger
 
 @Service
 class ChannelsTransactionHandler(
@@ -21,7 +22,8 @@ class ChannelsTransactionHandler(
         val web3j: Web3j,
         val channelEventDispatcher: ChannelEventDispatcher,
         val channelRepository: ChannelRepository,
-        val transactionRepository: TransactionRepository
+        val transactionRepository: TransactionRepository,
+        val logger: Logger
 ) : TransactionHandler {
 
     override fun address() = channels.contractAddress!!

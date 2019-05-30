@@ -9,18 +9,16 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import HashView from "../../common/HashView";
-import AmountView from "../../common/AmountView";
-import TimeView from "../../common/TimeView";
-import ChannelStatus from "../../common/ChannelStatus";
-
+import HashView from "../../view/HashView";
+import AmountView from "../../view/AmountView";
+import TimeView from "../../view/TimeView";
+import ChannelStatus from "../../view/ChannelStatus";
 
 const styles = (theme) => ({
     title: {
         flexGrow: 1
     },
 });
-
 
 @inject('channelStore')
 @observer
@@ -34,7 +32,7 @@ class ChannelDetails extends React.Component {
             <Paper>
                 <Toolbar>
                     <Typography variant="title" className={classes.title}>
-                        Channel
+                        Channel details
                     </Typography>
                 </Toolbar>
                 <List>
